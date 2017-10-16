@@ -1,3 +1,4 @@
+vocabulary_id,vocabulary_name,vocabulary_reference,vocabulary_version,vocabulary_concept_id
 JNJ_CPRD_GS_RXN,CPRD Prodcode (Gemscript Dictionary) Mapped to RxNorm Concepts,,,0
 JNJ_CPRD_ET_LOINC,CPRD Additional Enttypes Mapped to LOINC Concepts,,,0
 JNJ_CPRD_T_ET_LOINC,CPRD Test Enttypes Mapped to LOINC Concepts,,,0
@@ -5,3 +6,4 @@ JNJ_CPRD_PROV_SPEC,CPRD Provider Roles Mapped to CMS Specialty,,,0
 JNJ_CPRD_SCORE_LOINC,CPRD Scoring Method Plus Read Codes Mapped to LOINC,,,0
 JNJ_CPRD_PROV_CMS2,CPRD Provider to CMS2,,,0
 JNJ_CPRD_HES_LOINC,CPRD HES Observation Fields to LOINC,,,0
+CPRD_PRODUCT,CPRD Product as given in the therapy table,,,0
