@@ -38,21 +38,26 @@ SELECT
 
 	therapy.prodcode AS drug_source_value,
 
- -- Identifier of the practice staff member entering the data. A value of 0 indicates that the staffid is unknown
+  -- Identifier of the practice staff member entering the data. A value of 0 indicates that the staffid is unknown
 	therapy.staffid AS provider_id,
 
 	38000177 AS drug_type_concept_id, -- 'Prescription written'
 
- -- Total quantity is quantity per pack times number of packs
+  -- Total quantity is quantity per pack times number of packs
 	therapy.qty * therapy.numpacks AS quantity,
 
- -- Numeric daily dose prescribed for the event. Derived using a CPRD algorithm on common dosage strings (represented by textid < 100,000). Value is set to 0 for all dosage strings represented by a non-numeric textid
+  -- Numeric daily dose prescribed for the event. Derived using a CPRD algorithm on common dosage strings (represented by textid < 100,000). Value is set to 0 for all dosage strings represented by a non-numeric textid
 	therapy.ndd	AS	sig,
 
- -- Number to indicate whether the event is associated with a repeat schedule. Value of 0 implies the event is not part of a repeat prescription. A value >= 1 denotes the issue number for the prescription within a repeat schedule
+  -- Number to indicate whether the event is associated with a repeat schedule. Value of 0 implies the event is not part of a repeat prescription. A value >= 1 denotes the issue number for the prescription within a repeat schedule
 	therapy.issueseq	AS	refills,
 
-  createVisitId(therapy.patid, therapy.eventdate) AS visit_occurrence_id
+  -- Visit id only assigned If record date for this patient exists in visit_occurrence table
+  CASE
+    WHEN createvisitid(therapy.patid, therapy.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+    THEN createvisitid(therapy.patid, therapy.eventdate)
+    ELSE NULL
+  END AS visit_occurrence_id
 
 FROM caliber.therapy AS therapy
 	LEFT JOIN cdm5.source_to_concept_map AS product_map
@@ -63,6 +68,5 @@ FROM caliber.therapy AS therapy
 WHERE
 	therapy.eventdate IS NOT NULL
 	AND therapy.prodcode > 1 -- 1 is an invalid prodcode
-	AND (concept.domain_id = 'Drug' OR concept.concept_id = 0 ) -- Note: this also include unmapped concepts here, assuming most are drugs
-  AND createvisitid(therapy.patid, therapy.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+	AND (concept.domain_id = 'Drug' OR concept.concept_id = 0 ) -- Note: also include unmapped concepts here, assuming most are drugs
 ;
