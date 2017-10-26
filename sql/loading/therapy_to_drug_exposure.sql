@@ -1,4 +1,6 @@
--- Note: this query is slow.. What is the main cause? Cast source code to int? Existing indices?
+/*
+All rows from therapy where product code maps to a Drug.
+ */
 INSERT INTO cdm5.drug_exposure
 (
 	person_id,
@@ -19,21 +21,28 @@ SELECT
 	therapy.patid AS person_id,
 
 	therapy.eventdate AS drug_exposure_start_date,
-	therapy.eventdate AS drug_exposure_start_datetime, -- TODO: what is the convention for the time?
 
- 	-- [MAPPING   LOGIC] if 0<numdays<365: numdays = numdays as is else if imputed: numdays = most common numdays for this product/ndd/qty/numpack else:       numdays = 1  eventdate + numdays -1
-  -- TODO: implement most common numdays logic. Preprocess in separate table and write sql-procedure?
-	CASE
+	therapy.eventdate AS drug_exposure_start_datetime,
+
+ 	-- Derive end date from start date and numdays
+  -- If numdays valid, then add this to eventdate
+  -- If numdays invalid, impute either from most common numdays for this prodcode, daily dose, quantity and pack size
+  -- 	or impute from prodcode alone, whichever is available first.
+  -- If both are not found, assign a duration of 1 day
+  CASE
 		WHEN (therapy.numdays > 0 AND therapy.numdays < 365)
-			THEN therapy.eventdate + (therapy.numdays - 1) * INTERVAL '1 day'
-		ELSE therapy.eventdate
+			THEN createEndDate(therapy.eventdate, therapy.numdays)
+		ELSE createEndDate(therapy.eventdate, COALESCE(numdays_aggregate_full.numdays, numdays_aggregate_prodcode.numdays, 1))
 	END AS drug_exposure_end_date,
 
+	-- The non-imputed days supply
 	CASE
-		WHEN (therapy.numdays = 0 OR therapy.numdays > 365) THEN NULL
-		ELSE therapy.numdays
+    WHEN (therapy.numdays > 0 AND therapy.numdays < 365)
+      THEN therapy.numdays
+    ELSE NULL
 	END AS days_supply,
 
+  -- Mapped standard concept id or 0 if no mapping found
 	COALESCE(target_concept_id,0) AS drug_concept_id,
 
 	therapy.prodcode AS drug_source_value,
@@ -41,7 +50,8 @@ SELECT
   -- Identifier of the practice staff member entering the data. A value of 0 indicates that the staffid is unknown
 	therapy.staffid AS provider_id,
 
-	38000177 AS drug_type_concept_id, -- 'Prescription written'
+  -- 'Prescription written'
+	38000177 AS drug_type_concept_id,
 
   -- Total quantity is quantity per pack times number of packs
 	therapy.qty * therapy.numpacks AS quantity,
@@ -55,7 +65,7 @@ SELECT
   -- Visit id only assigned If record date for this patient exists in visit_occurrence table
   CASE
     WHEN createvisitid(therapy.patid, therapy.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-    THEN createvisitid(therapy.patid, therapy.eventdate)
+      THEN createvisitid(therapy.patid, therapy.eventdate)
     ELSE NULL
   END AS visit_occurrence_id
 
@@ -65,8 +75,12 @@ FROM caliber.therapy AS therapy
 	  AND product_map.source_vocabulary_id = 'CPRD_PRODUCT'
 	LEFT JOIN cdm5.concept AS concept
 		ON product_map.target_concept_id = concept.concept_id
+	LEFT JOIN public.numdays_aggregate_full AS numdays_aggregate_full
+		USING (prodcode, ndd, qty, numpacks)
+	LEFT JOIN public.numdays_aggregate_prodcode AS numdays_aggregate_prodcode
+		USING (prodcode)
 WHERE
 	therapy.eventdate IS NOT NULL
 	AND therapy.prodcode > 1 -- 1 is an invalid prodcode
-	AND (concept.domain_id = 'Drug' OR concept.concept_id = 0 ) -- Note: also include unmapped concepts here, assuming most are drugs
+	AND (concept.domain_id = 'Drug' OR concept.concept_id = 0 ) -- Note: also include unmapped concepts here
 ;

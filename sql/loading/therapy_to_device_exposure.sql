@@ -1,5 +1,5 @@
 /*
-Only rows where gemscript maps to a device
+Only rows where product code maps to a device
 */
 INSERT INTO cdm5.device_exposure
 (
@@ -21,7 +21,8 @@ SELECT
 	product_map.target_concept_id AS device_concept_id,
   therapy.prodcode AS device_source_value,
 
-	44818707 AS device_type_concept_id, -- EHR Detail
+  -- EHR Detail
+	44818707 AS device_type_concept_id,
 
   -- Identifier of the practice staff member entering the data. A value of 0 indicates that the staffid is unknown
 	therapy.staffid AS provider_id,
