@@ -14,18 +14,16 @@ INSERT INTO cdm5.person
   ethnicity_concept_id
 )
   SELECT
+    DISTINCT ON (p.patid)
     p.patid            AS person_id,
     p.patid            AS person_source_value,
     p.pracid           AS care_site_id,
 
-    CASE
-    WHEN p.gender = 2
-      THEN 8532 -- FEMALE
-    WHEN p.gender = 1
-      THEN 8507 -- MALE
-    ELSE 0 -- Data not entered | Indeterminate | Unknown
-    END
-                       AS gender_concept_id,
+    CASE p.gender
+      WHEN 1 THEN 8507 -- MALE
+      WHEN 2 THEN 8532 -- FEMALE
+      ELSE 0 -- Data not entered | Indeterminate | Unknown
+    END                AS gender_concept_id,
 
     p.gender           AS gender_source_value,
 
@@ -62,8 +60,7 @@ INSERT INTO cdm5.person
     WHEN hesp.gen_ethnicity = 'Chinese'
       THEN 38003579
     ELSE 0
-    END
-                       AS race_concept_id,
+    END                AS race_concept_id,
 
     hesp.gen_ethnicity AS race_source_value,
 

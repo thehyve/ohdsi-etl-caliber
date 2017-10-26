@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS caliber.medical;
 CREATE TABLE caliber.medical (
 	medcode 	integer NOT NULL,
 	readcode 	varchar(8),
-	"desc" 		text
+	readterm	text
 );
 
 DROP TABLE IF EXISTS caliber.product;
