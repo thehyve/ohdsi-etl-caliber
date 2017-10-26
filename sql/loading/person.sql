@@ -87,12 +87,7 @@ INSERT INTO cdm5.person
                   LEFT JOIN (
                               SELECT
                                 p.patid,
-                                CASE
-                                WHEN od.dod IS NOT NULL
-                                  THEN od.dod
-                                ELSE p.deathdate
-                                END
-                                  AS ons_pat_death
+                                COALESCE(od.dod, p.deathdate) AS ons_pat_death
                               FROM
                                 caliber.patient AS p,
                                 caliber.ons_death AS od
@@ -101,9 +96,9 @@ INSERT INTO cdm5.person
                     ON p.patid = opd.patid
               ) p_valid_period
       ON p.patid = p_valid_period.patid
-  -- Do not insert patients with an accept value of 0
+        -- Do not insert patients with an accept value of 0
   WHERE p.accept = 1
         -- Exclude patients born before 1900
         AND p.yob >= 1900
         -- Exclude patients with observation end dates before observation start date
-        AND valid_obs_period != FALSE;
+        AND valid_obs_period IS NOT FALSE;

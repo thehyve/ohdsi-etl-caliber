@@ -3,9 +3,6 @@ INSERT INTO cdm5.care_site
   care_site_id,
   care_site_source_value,
   location_id
-  --care_site_name,
-  --place_of_service_concept_id,
-  --place_of_service_source_value
 )
   SELECT
     practice.pracid AS care_site_id,
