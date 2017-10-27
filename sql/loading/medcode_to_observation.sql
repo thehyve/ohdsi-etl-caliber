@@ -1,6 +1,7 @@
 /*
 Load from the medcode_merge: the union of the clinical, referral, test and immunisation tables.
-Only include rows with a concept that maps to the Observation domain or where the source maps to the Observation domain.
+Include rows with a concept that maps to the Observation domain or where the source maps to the Observation domain.
+Also include unmapped concepts, as most read codes map to an observation.
 */
 
 INSERT INTO cdm5.observation
@@ -42,5 +43,5 @@ INSERT INTO cdm5.observation
     END AS observation_type_concept_id
 
   FROM medcode_merge AS medcode_merge
-  WHERE target_domain_id = 'Observation' OR (target_domain_id ISNULL AND source_domain_id = 'Observation')
+  WHERE target_domain_id = 'Observation' OR (target_domain_id ISNULL AND source_domain_id = 'Observation') OR source_domain_id ISNULL
 ;
