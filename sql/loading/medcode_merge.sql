@@ -8,23 +8,23 @@ It is possible that one row maps to multiple tables, e.g. vaccinations map both 
 Note: for 30k records, this query takes ~3 seconds in the dev environment
 */
 DROP TABLE IF EXISTS public.medcode_merge;
-WITH medcode_merge (patid, eventdate, constype, consid, medcode, staffid, source_table) AS (
-  SELECT patid, eventdate, constype, consid, medcode, staffid, 'clinical'
+WITH medcode_merge (patid, eventdate, constype, consid, medcode, staffid, status, source_table) AS (
+  SELECT patid, eventdate, constype, consid, medcode, staffid, NULL, 'clinical'
   FROM caliber.clinical
 
   UNION ALL
 
-  SELECT patid, eventdate, constype, consid, medcode, staffid, 'referral'
+  SELECT patid, eventdate, constype, consid, medcode, staffid, NULL, 'referral'
   FROM caliber.referral
 
   UNION ALL
 
-  SELECT patid, eventdate, constype, consid, medcode, staffid, 'test'
+  SELECT patid, eventdate, constype, consid, medcode, staffid, NULL, 'test'
   FROM caliber.test
 
   UNION ALL
 
-  SELECT patid, eventdate, constype, consid, medcode, staffid, 'immunisation'
+  SELECT patid, eventdate, constype, consid, medcode, staffid, status, 'immunisation'
   FROM caliber.immunisation
 )
 SELECT
@@ -56,7 +56,10 @@ SELECT
 
   source_concept.domain_id AS source_domain_id,
 
-  target_concept.domain_id AS target_domain_id
+  target_concept.domain_id AS target_domain_id,
+
+  -- null if not from immunisation file
+  medcode_merge.status AS immunisation_status
 
 INTO public.medcode_merge
 
