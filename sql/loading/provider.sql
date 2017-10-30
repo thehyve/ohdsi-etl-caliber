@@ -29,7 +29,7 @@ INSERT INTO cdm5.provider (
       ON staff.role = (specialty_map.source_code :: INT)
          AND specialty_map.source_vocabulary_id = 'JNJ_CPRD_PROV_SPEC'
 
-  UNION ALL
+  UNION ALL -- Used "ALL" to ensure a constraint violation will occur in case of duplicates
 
   SELECT DISTINCT ON (hoc.tretspef)
 

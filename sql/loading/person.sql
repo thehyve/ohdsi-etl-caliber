@@ -20,9 +20,11 @@ INSERT INTO cdm5.person
     p.pracid           AS care_site_id,
 
     CASE p.gender
-      WHEN 1 THEN 8507 -- MALE
-      WHEN 2 THEN 8532 -- FEMALE
-      ELSE 0 -- Data not entered | Indeterminate | Unknown
+    WHEN 1
+      THEN 8507 -- MALE
+    WHEN 2
+      THEN 8532 -- FEMALE
+    ELSE 0 -- Data not entered | Indeterminate | Unknown
     END                AS gender_concept_id,
 
     p.gender           AS gender_source_value,
@@ -34,30 +36,30 @@ INSERT INTO cdm5.person
     ELSE p.mob END
                        AS month_of_birth,
 
-    CASE -- Sorted by prevalence
-    WHEN hesp.gen_ethnicity = 'White'
+    CASE hesp.gen_ethnicity -- Sorted by prevalence
+    WHEN 'White'
       THEN 8527
-    WHEN hesp.gen_ethnicity = 'Unknown'
+    WHEN 'Unknown'
       THEN 0 -- was 8552
-    WHEN hesp.gen_ethnicity = 'Indian'
+    WHEN 'Indian'
       THEN 38003574
-    WHEN hesp.gen_ethnicity = 'Other'
+    WHEN 'Other'
       THEN 0 -- was 8522
-    WHEN hesp.gen_ethnicity = 'Oth_Asian'
+    WHEN 'Oth_Asian'
       THEN 8515
-    WHEN hesp.gen_ethnicity = 'Pakistani'
+    WHEN 'Pakistani'
       THEN 38003589
-    WHEN hesp.gen_ethnicity = 'Bl_Afric'
+    WHEN 'Bl_Afric'
       THEN 38003598
-    WHEN hesp.gen_ethnicity = 'Mixed'
+    WHEN 'Mixed'
       THEN 0 -- was 8522
-    WHEN hesp.gen_ethnicity = 'Bl_Carib'
+    WHEN 'Bl_Carib'
       THEN 38003598
-    WHEN hesp.gen_ethnicity = 'Bl_Other'
+    WHEN 'Bl_Other'
       THEN 38003598
-    WHEN hesp.gen_ethnicity = 'Bangladesi'
+    WHEN 'Bangladesi'
       THEN 38003598
-    WHEN hesp.gen_ethnicity = 'Chinese'
+    WHEN 'Chinese'
       THEN 38003579
     ELSE 0
     END                AS race_concept_id,
@@ -70,32 +72,11 @@ INSERT INTO cdm5.person
   FROM caliber.patient p
     LEFT JOIN caliber.hes_patient hesp
       ON p.patid = hesp.patid
-    LEFT JOIN (
-                SELECT
-                  p.patid,
-                  greatest(p.crd, prac.uts) < least(p.tod, prac.lcd, opd.ons_pat_death) AS valid_obs_period
-
-                FROM
-                  caliber.patient p
-                  LEFT JOIN caliber.practice prac
-                    ON p.pracid = prac.pracid
-                  LEFT JOIN caliber.ons_death od
-                    ON p.patid = od.patid
-                  LEFT JOIN (
-                              SELECT
-                                p.patid,
-                                COALESCE(od.dod, p.deathdate) AS ons_pat_death
-                              FROM
-                                caliber.patient AS p,
-                                caliber.ons_death AS od
-                              WHERE p.patid = od.patid
-                            ) opd
-                    ON p.patid = opd.patid
-              ) p_valid_period
-      ON p.patid = p_valid_period.patid
-        -- Do not insert patients with an accept value of 0
+    LEFT JOIN caliber.obs_period_validity obs_validity
+      ON p.patid = obs_validity.patid
+  -- Do not insert patients with an accept value of 0
   WHERE p.accept = 1
         -- Exclude patients born before 1900
         AND p.yob >= 1900
         -- Exclude patients with observation end dates before observation start date
-        AND valid_obs_period IS NOT FALSE;
+        AND obs_validity.valid_obs_period IS NOT FALSE;
