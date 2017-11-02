@@ -6,3 +6,4 @@ ALTER TABLE cdm5.drug_exposure ALTER COLUMN visit_occurrence_id TYPE BIGINT USIN
 ALTER TABLE cdm5.device_exposure ALTER COLUMN visit_occurrence_id TYPE BIGINT USING visit_occurrence_id::BIGINT;
 ALTER TABLE cdm5.observation ALTER COLUMN visit_occurrence_id TYPE BIGINT USING visit_occurrence_id::BIGINT;
 ALTER TABLE cdm5.measurement ALTER COLUMN visit_occurrence_id TYPE BIGINT USING visit_occurrence_id::BIGINT;
+ALTER TABLE cdm5.observation_period ALTER COLUMN observation_period_id TYPE BIGINT USING observation_period_id::BIGINT;
