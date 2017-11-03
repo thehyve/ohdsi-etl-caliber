@@ -16,9 +16,11 @@ SELECT
 	therapy.patid AS person_id,
 
 	therapy.eventdate AS device_exposure_start_date,
-	therapy.eventdate AS device_exposure_start_datetime,
+
+	therapy.eventdate :: TIMESTAMP AS device_exposure_start_datetime,
 
 	product_map.target_concept_id AS device_concept_id,
+
   therapy.prodcode AS device_source_value,
 
   -- EHR Detail

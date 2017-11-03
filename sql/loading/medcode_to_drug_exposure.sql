@@ -1,6 +1,7 @@
 /*
 Load from the medcode_merge: the union of the clinical, referral, test and immunisation tables.
 Only include rows with a concept that maps to the Drug domain or where the source maps to the Drug domain.
+If record from the immunisation table, then the immunisation status should be 'given'.
 */
 
 INSERT INTO cdm5.drug_exposure
@@ -51,6 +52,6 @@ INSERT INTO cdm5.drug_exposure
     OR (target_domain_id ISNULL AND source_domain_id = 'Drug')
   ) AND (
     medcode_merge.immunisation_status = 'Given'
-    OR medcode_merge.source_table != 'immunisation'
+    OR lower(medcode_merge.source_table) NOT LIKE 'immunisation'
   )
 ;

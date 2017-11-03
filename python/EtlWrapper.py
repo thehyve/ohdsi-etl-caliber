@@ -43,7 +43,7 @@ class EtlWrapper(object):
         # self._load_mappings()
 
         # Source preparation
-        # self._prepare_source()
+        self._prepare_source()
 
         # Loading
         self.total_rows_inserted = 0  # reset
@@ -83,8 +83,8 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/care_site.sql', True)
         self.execute_sql_file('./sql/loading/provider.sql', True)
         self.execute_sql_file('./sql/loading/person.sql', True)
-        # self.execute_sql_file('./sql/loading/observation_period.sql', True)
-        # self.execute_sql_file('./sql/loading/visit_occurrence.sql', True)
+        self.execute_sql_file('./sql/loading/observation_period.sql', True)
+        self.execute_sql_file('./sql/loading/visit_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/consultation_to_visit_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/medcode_to_condition_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/medcode_to_procedure_occurrence.sql', True)

@@ -22,7 +22,7 @@ SELECT
 
 	therapy.eventdate AS drug_exposure_start_date,
 
-	therapy.eventdate AS drug_exposure_start_datetime,
+	therapy.eventdate :: TIMESTAMP AS drug_exposure_start_datetime,
 
  	-- Derive end date from start date and numdays
   -- If numdays valid, then add this to eventdate

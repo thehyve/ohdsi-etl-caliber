@@ -6,6 +6,7 @@ This script assigns a visit id and does the concept mapping.
 
 It is possible that one row maps to multiple tables, e.g. vaccinations map both to a procedure and a drug.
 Note: for 30k records, this query takes ~3 seconds in the dev environment
+TODO: create indices on this table (source_table, target_domain_id, source_domain_id)
 */
 DROP TABLE IF EXISTS public.medcode_merge;
 WITH medcode_merge (patid, eventdate, constype, consid, medcode, staffid, status, source_table) AS (
@@ -32,7 +33,7 @@ SELECT
 
   medcode_merge.eventdate AS _start_date,
 
-  medcode_merge.eventdate AS _start_datetime,
+  medcode_merge.eventdate :: TIMESTAMP AS _start_datetime,
 
   CASE
     WHEN createvisitid(medcode_merge.patid, medcode_merge.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
