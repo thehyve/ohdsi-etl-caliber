@@ -5,7 +5,6 @@ INSERT INTO cdm5.provider (
   specialty_concept_id,
   specialty_source_value
 )
-
   SELECT
     DISTINCT ON (staff.staffid)
     staff.staffid                                       AS provider_id,
@@ -47,4 +46,5 @@ INSERT INTO cdm5.provider (
 
   FROM caliber.hes_op_clinical AS hoc
     LEFT JOIN cdm5.source_to_concept_map AS cms2_map
-      ON hoc.tretspef = cms2_map.source_code AND cms2_map.source_vocabulary_id = 'JNJ_CPRD_PROV_CMS2';
+      ON hoc.tretspef = cms2_map.source_code
+         AND cms2_map.source_vocabulary_id = 'JNJ_CPRD_PROV_CMS2';
