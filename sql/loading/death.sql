@@ -20,6 +20,6 @@ INSERT INTO cdm5.death
     LEFT JOIN caliber.obs_period_validity obs_period_validity
       ON patient.patid = obs_period_validity.patid
     LEFT JOIN cdm5.concept concept
-      ON ons_death.cause = concept.concept_code AND vocabulary_id = 'ICD10'
+      ON ons_death.cause = concept.concept_code AND vocabulary_id = 'ICD10CM'
   WHERE obs_period_validity.valid_obs_period IS NOT FALSE
-        AND (patient.deathdate IS NOT NULL OR ons_death.dod IS NOT NULL);
+        AND (ons_death.dod IS NOT NULL OR patient.deathdate IS NOT NULL);
