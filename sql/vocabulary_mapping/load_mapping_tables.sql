@@ -26,3 +26,9 @@
 
 -- Product codes to RxNorm
 \copy cdm5.source_to_concept_map FROM 'resources/mapping_tables/CPRD_PRODUCT_TO_RXNORM.csv' WITH CSV HEADER;
+
+-- CPRD qualifiers (TQU)
+\copy cdm5.source_to_concept_map FROM 'resources/mapping_tables/CPRD_QUALIFIER_TO_MEAS_VALUE.csv' WITH CSV HEADER;
+
+-- CPRD units (SUM)
+\copy cdm5.source_to_concept_map FROM 'resources/mapping_tables/CPRD_UNIT_TO_UCUM.csv' WITH CSV HEADER;

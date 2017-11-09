@@ -7,3 +7,5 @@ JNJ_CPRD_SCORE_LOINC,CPRD Scoring Method Plus Read Codes Mapped to LOINC,,,0
 JNJ_CPRD_PROV_CMS2,CPRD Provider to CMS2,,,0
 JNJ_CPRD_HES_LOINC,CPRD HES Observation Fields to LOINC,,,0
 CPRD_PRODUCT,CPRD Product as given in the therapy table,,,0
+CPRD_QUALIFIER,CPRD Test Qualifier (TQU) lookup,,,0
+CPRD_UNIT,CPRD Specimen Unit of Measure (SUM) lookup,,,0
