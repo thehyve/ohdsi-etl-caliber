@@ -74,6 +74,7 @@ class EtlWrapper(object):
     def _prepare_source(self):
         # TODO: create as views?
         self.execute_sql_file('./sql/source_preprocessing/medcode_merge.sql', True)
+        self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
 
@@ -92,6 +93,8 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/medcode_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/medcode_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/medcode_to_device_exposure.sql', True)
+        self.execute_sql_file('./sql/loading/test_to_measurement.sql', True)
+        self.execute_sql_file('./sql/loading/test_to_observation.sql', True)
 
     def print_summary_message(self):
         print()
