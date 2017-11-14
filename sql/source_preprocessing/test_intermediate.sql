@@ -105,8 +105,11 @@ FROM (
   LEFT JOIN cdm5.concept AS target_enttype_concept
     ON enttype_map.target_concept_id = target_enttype_concept.concept_id
   LEFT JOIN cdm5.source_to_concept_map AS tqu_map
-    ON tqu_map.source_code = test_intermediate.qualifier_tqu AND tqu_map.source_vocabulary_id = 'CPRD_QUALIFIER'
+    ON tqu_map.source_code = test_intermediate.qualifier_tqu AND
+       tqu_map.source_vocabulary_id = 'CPRD_QUALIFIER'
   LEFT JOIN cdm5.source_to_concept_map AS opr_map
-    ON opr_map.source_code = test_intermediate.operator_opr AND opr_map.source_vocabulary_id = 'CPRD_QUALIFIER'
+    ON opr_map.source_code = test_intermediate.operator_opr AND
+       opr_map.source_vocabulary_id = 'CPRD_QUALIFIER'
   LEFT JOIN cdm5.source_to_concept_map AS sum_map
-    ON sum_map.source_code = test_intermediate.unit_sum AND sum_map.source_vocabulary_id = 'CPRD_UNIT';
+    ON sum_map.source_code = test_intermediate.unit_sum AND
+       sum_map.source_vocabulary_id = 'CPRD_UNIT';

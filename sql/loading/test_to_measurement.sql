@@ -56,5 +56,8 @@ INSERT INTO cdm5.measurement
     test_intermediate.range_to AS range_high
 
   FROM public.test_intermediate AS test_intermediate
-  WHERE test_intermediate.eventdate IS NOT NULL AND test_intermediate.target_domain_id = 'Measurement'
+  WHERE test_intermediate.eventdate IS NOT NULL AND
+        (test_intermediate.target_domain_id = 'Measurement' OR
+         test_intermediate.target_domain_id = 'None' OR
+         test_intermediate.target_domain_id IS NULL)
 ;
