@@ -1,5 +1,5 @@
 import sys
-from python.EtlProcessor import EtlProcessor
+from python.EtlWrapper import EtlWrapper
 from sqlalchemy import create_engine
 import click
 
@@ -26,7 +26,7 @@ def main(database, username, password, hostname, port, source_schema, target_sch
     # Connect to database
     eng = create_engine('postgresql://%s:%s@%s:%s/%s' % (username, password, hostname, port, database))
     with eng.connect() as connection:
-        etl = EtlProcessor(connection, source_schema, target_schema)
+        etl = EtlWrapper(connection, source_schema, target_schema)
         etl.execute()
 
 if __name__ == "__main__":

@@ -1,4 +1,6 @@
 import re
+import time
+from python.process_additional import process_additional
 
 
 def create_insert_message(sql_command, rowcount):
@@ -72,11 +74,14 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
 
     def _prepare_source(self):
-        # TODO: create as views?
         self.execute_sql_file('./sql/source_preprocessing/medcode_merge.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
+        t1 = time.time()
+        process_additional(self.connection)
+        t2 = time.time()
+        print("Process Additional:", str(t2-t1))
 
     def _load(self):
         # TODO: is this the correct order?
