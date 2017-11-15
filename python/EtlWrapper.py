@@ -110,6 +110,8 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/medcode_to_device_exposure.sql', True)
         self.execute_sql_file('./sql/loading/test_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/test_to_observation.sql', True)
+        self.execute_sql_file('./sql/loading/additional_to_measurement.sql', True)
+        self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
 
     def print_summary_message(self):
         print()

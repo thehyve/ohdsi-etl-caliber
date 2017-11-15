@@ -57,13 +57,14 @@ def get_additional(connection, schema):
 
 
 def process_row(row):
+    N_DATA_COLUMNS = 7
     patid = row[0]
     enttype = row[1]
     adid = row[2]
-    data_values = row[3:10]
-    data_names = row[10:17]
-    data_lookups = row[17:]
-    for i in range(7):
+    data_values = row[3:3+N_DATA_COLUMNS]
+    data_names = row[3+N_DATA_COLUMNS:3+N_DATA_COLUMNS*2]
+    data_lookups = row[3+N_DATA_COLUMNS*2:]
+    for i in range(N_DATA_COLUMNS):
         data_value = data_values[i]
         data_name = data_names[i]
         data_lookup = data_lookups[i]

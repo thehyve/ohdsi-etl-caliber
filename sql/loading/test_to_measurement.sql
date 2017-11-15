@@ -25,7 +25,11 @@ INSERT INTO cdm5.measurement
 
     coalesce(test_intermediate.staffid, 0) AS provider_id,
 
-    createvisitid(test_intermediate.patid, test_intermediate.eventdate) AS visit_occurrence_id,
+    CASE
+      WHEN createvisitid(test_intermediate.patid, test_intermediate.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+      THEN createvisitid(test_intermediate.patid, test_intermediate.eventdate)
+      ELSE NULL
+    END AS visit_occurrence_id,
 
     test_intermediate.eventdate AS measurement_date,
 
