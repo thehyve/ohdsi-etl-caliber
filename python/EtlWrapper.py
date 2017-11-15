@@ -3,10 +3,10 @@ import time
 from python.process_additional import process_additional
 
 
-def create_insert_message(sql_command, rowcount):
+def create_insert_message(sql_command, row_count, execution_time=None):
     """ Create message on how many lines inserted into which table """
-    if rowcount >= 0:
-        table_into = "?"
+    if row_count >= 0:
+        table_into = '?'
 
         # TODO: multiple into's? => rowcount only about last
         match_into = re.search(r'INTO (.+?)\s', sql_command)
@@ -18,9 +18,13 @@ def create_insert_message(sql_command, rowcount):
         # if match_from:
         #     table_from = match_from.group(1)
 
-        return "Insert into {:<30} {:>8,}".format(table_into, rowcount)
+        return create_message(table_into, row_count, execution_time)
 
-    return "Nothing inserted"
+    return 'Nothing inserted'
+
+
+def create_message(table_into, row_count, execution_time):
+    return 'Inserted into {:<35} {:>9,} [{:>8.2f} s]'.format(table_into, row_count, execution_time)
 
 
 class EtlWrapper(object):
@@ -30,6 +34,11 @@ class EtlWrapper(object):
         self.connection = connection
         self.source_schema = source_schema
         self.target_schema = target_schema
+        self.n_queries_executed = 0
+        self.n_queries_failed = 0
+        self.total_rows_inserted = 0
+
+    def reset_summary_stats(self):
         self.n_queries_executed = 0
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
@@ -46,9 +55,10 @@ class EtlWrapper(object):
 
         # Source preparation
         self._prepare_source()
+        self.print_summary_message()
+        self.reset_summary_stats()
 
         # Loading
-        self.total_rows_inserted = 0  # reset
         self._load()
 
         self.print_summary_message()
@@ -79,9 +89,9 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
         t1 = time.time()
-        process_additional(self.connection)
-        t2 = time.time()
-        print("Process Additional:", str(t2-t1))
+        row_count = process_additional(self.connection, target_table='additional_intermediate', target_schema='public')
+        self.total_rows_inserted += row_count
+        print(create_message('public.additional_intermediate', row_count, time.time()-t1))
 
     def _load(self):
         # TODO: is this the correct order?
@@ -116,16 +126,19 @@ class EtlWrapper(object):
         # Execute all sql commands in the file (commands are ; separated)
         # Note: returns result for last command?
         try:
+            t1 = time.time()
             result = self.connection.execute(sql_file)
+            time_delta = time.time() - t1
         except Exception as msg:
             print("Command in '%s' failed: %s" % (filename, msg))
             self.n_queries_failed += 1
             return
     
         if verbose:
-            print(create_insert_message(sql_file, result.rowcount))
+            message = create_insert_message(sql_file, result.rowcount, time_delta)
+            print(message)
 
-        # Note: only works if 1 insert per file and no update/delete
+        # Note: only tracks row count correctly if 1 insert per file and no update/delete scripts
         if result.rowcount > 0:
             self.total_rows_inserted += result.rowcount
 

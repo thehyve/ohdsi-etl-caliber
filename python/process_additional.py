@@ -21,6 +21,10 @@ def sql_numeric_param(i):
     return str(i)
 
 
+def sql_create_values_string(*args):
+    return '(' + ",".join(args) + ')'
+
+
 def create_intermediate_table(connection, schema, table_name):
     ddl_sql = ("DROP TABLE IF EXISTS {0}.{1};"
                "CREATE TABLE {0}.{1} ("
@@ -29,6 +33,7 @@ def create_intermediate_table(connection, schema, table_name):
                "    enttype_string VARCHAR,"
                "    datafield_name VARCHAR,"
                "    data_value INTEGER,"
+               "    data_code INTEGER,"
                "    data_date DATE,"
                "    lookup_type VARCHAR"
                ")").format(schema, table_name)
@@ -36,6 +41,7 @@ def create_intermediate_table(connection, schema, table_name):
 
 
 def get_additional(connection, schema):
+    #TODO, replace 'caliber_real' by schema parameter
     return connection.execute(
         ("SELECT patid,enttype,adid,"
          "additional.data1,additional.data2,additional.data3,"
@@ -44,7 +50,7 @@ def get_additional(connection, schema):
          "entity.data4,entity.data5,entity.data6,entity.data7,"
          "entity.data1_lkup,entity.data2_lkup,entity.data3_lkup,"
          "entity.data4_lkup,entity.data5_lkup,entity.data6_lkup,entity.data7_lkup\n"
-         "FROM caliber_real.additional AS additional\n" #TODO, replace by schema
+         "FROM caliber_real.additional AS additional\n" 
          "JOIN {0}.entity USING (enttype)"
          ).format(schema)
     )
@@ -70,44 +76,51 @@ def process_row(row):
         if data_lookup is not None and data_value == '0':
             continue
 
-        # If it is a date, insert
+        # Dependig on lookup, the data value can be numeric, a code or a date
         data_date = None
-        if data_lookup == 'dd/mm/yyyy':
+        data_code = None
+        data_numeric = None
+        if data_lookup is None:
+            data_numeric = data_value
+        elif data_lookup == 'dd/mm/yyyy':
             data_date = datetime.strptime(data_value, '%d/%m/%Y')
-            data_value = None
+        else:
+            # All other values with a lookup
+            data_code = data_value
 
         enttype_string = str(enttype) + '-' + str(i + 1)
 
-        sql_value = "({},{},{},{},{},{},{})".format(
+        sql_value = sql_create_values_string(
             sql_numeric_param(patid),
             sql_numeric_param(adid),
             sql_string_param(enttype_string),
             sql_string_param(data_name),
-            sql_numeric_param(data_value),
+            sql_numeric_param(data_numeric),
+            sql_numeric_param(data_code),
             sql_date_param(data_date),
             sql_string_param(data_lookup)
         )
         yield sql_value
 
 
-def process_additional(connection, source_schema='caliber', target_schema='public'):
+def process_additional(connection, target_table='additional_intermediate', source_schema='caliber', target_schema='public'):
     """
     Takes additional table and generates rows per data field.
     Yields AdditionalIntermediate ORM objects
     """
-    TARGET_TABLE = 'additional_intermediate'
 
     # Create the intermediate table
-    create_intermediate_table(connection, target_schema, TARGET_TABLE)
+    create_intermediate_table(connection, target_schema, target_table)
 
     #
     additional_table = get_additional(connection, source_schema)
 
-    BLOCK_SIZE = 10000
+    BLOCK_SIZE = 50000
     SQL_INSERT_BASE = "INSERT INTO {0}.{1} " \
-                      "(patid, adid, enttype_string, datafield_name, data_value, data_date, lookup_type) " \
-                      "VALUES".format(target_schema, TARGET_TABLE)
+                      "(patid, adid, enttype_string, datafield_name, data_value, data_code, data_date, lookup_type) " \
+                      "VALUES".format(target_schema, target_table)
 
+    total_rows_inserted = 0
     while True:
         # Load 1000 in memory
         sql_insert_values = []
@@ -115,6 +128,7 @@ def process_additional(connection, source_schema='caliber', target_schema='publi
         for row in rows:
             for value in process_row(row):
                 sql_insert_values.append(value)
+                total_rows_inserted += 1
 
         sql_insert = SQL_INSERT_BASE + ' ' + ','.join(sql_insert_values)
         insert_result = connection.execute(text(sql_insert))
@@ -123,3 +137,5 @@ def process_additional(connection, source_schema='caliber', target_schema='publi
         # Stop condition if all rows retrieved
         if len(rows) < BLOCK_SIZE:
             break
+
+    return total_rows_inserted
