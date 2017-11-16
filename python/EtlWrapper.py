@@ -66,6 +66,8 @@ class EtlWrapper(object):
     def _create_functions(self):
         self.execute_sql_file('./sql/functions/createEndDate.sql')
         self.execute_sql_file('./sql/functions/createVisitId.sql')
+        self.execute_sql_file('./sql/functions/mapCprdLookup.sql')
+        # TODO: execute unit tests?
         print("Sql functions created or replaced")
 
     def _prepare_cdm(self):

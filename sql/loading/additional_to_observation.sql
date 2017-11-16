@@ -40,30 +40,8 @@ INSERT INTO cdm5.observation
     -- Numeric value
     additional_int.data_value as value_as_string,
 
-    -- TODO: expand e.g. with yes/no
-    CASE cprd_lookup.description
-      WHEN 'Not examined'       THEN 4301433
-      WHEN 'Potential Abnormal' THEN 40567538
-      WHEN 'Present'            THEN 4181412
-      WHEN 'Unknown'            THEN 4129922
-      WHEN 'Normal'             THEN 4069590
-      WHEN 'Absent'             THEN 4132135
-      WHEN 'Abnormal'           THEN 4135493
-      WHEN 'A'                  THEN 4008253
-      WHEN 'A+'                 THEN 4082948
-      WHEN 'A-'                 THEN 4080397
-      WHEN 'B'                  THEN 4009006
-      WHEN 'B+'                 THEN 4175555
-      WHEN 'B-'                 THEN 4080398
-      WHEN 'O'                  THEN 4237761
-      WHEN 'O+'                 THEN 4080395
-      WHEN 'O-'                 THEN 4082947
-      WHEN 'AB'                 THEN 4013993
-      WHEN 'AB+'                THEN 4080396
-      WHEN 'AB-'                THEN 4082949
-      WHEN 'Rhesus +'           THEN 4013995
-      WHEN 'Rhesus -'           THEN 4013540
-    END AS value_as_concept_id,
+    -- Mapping of the description
+    mapCprdLookup(cprd_lookup.description) AS value_as_concept_id,
 
     -- Description of the code belonging to that lookup type
     cprd_lookup.description AS value_source_value,
