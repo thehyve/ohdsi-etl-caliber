@@ -19,7 +19,7 @@ SELECT
   test_intermediate.operator_opr             AS operator_source_value,
   opr_map.target_concept_id                  AS operator_concept_id,
   test_intermediate.unit_sum                 AS unit_source_value,
-  sum_map.target_concept_id                  AS unit_concept_id,
+  unit_map.target_concept_id                 AS unit_concept_id,
   test_intermediate.alternative_source_value AS alternative_source_value,
   target_enttype_concept.domain_id           AS target_domain_id
 INTO public.test_intermediate
@@ -110,6 +110,6 @@ FROM (
   LEFT JOIN cdm5.source_to_concept_map AS opr_map
     ON opr_map.source_code = test_intermediate.operator_opr AND
        opr_map.source_vocabulary_id = 'CPRD_QUALIFIER'
-  LEFT JOIN cdm5.source_to_concept_map AS sum_map
-    ON sum_map.source_code = test_intermediate.unit_sum AND
-       sum_map.source_vocabulary_id = 'CPRD_UNIT';
+  LEFT JOIN cdm5.source_to_concept_map AS unit_map
+    ON unit_map.source_code = test_intermediate.unit_sum AND
+       unit_map.source_vocabulary_id = 'CPRD_UNIT';

@@ -44,9 +44,10 @@ INSERT INTO cdm5.measurement
     mapCprdLookup(cprd_lookup.description) AS value_as_concept_id,
 
     -- Description of the code belonging to that lookup type
-    cprd_lookup.description AS value_source_value,
+    coalesce(cprd_lookup.description, additional_int.data_date :: TEXT, additional_int.lookup_type) AS value_source_value,
 
-    sum_map.target_concept_id AS unit_concept_id,
+    unit_map.target_concept_id AS unit_concept_id,
+
     additional_int.unit_code AS unit_source_value
 
   FROM public.additional_intermediate as additional_int
@@ -60,9 +61,8 @@ INSERT INTO cdm5.measurement
   LEFT JOIN public.cprd_lookup AS cprd_lookup
       ON cprd_lookup.lookup_type = additional_int.lookup_type AND
          cprd_lookup.code = additional_int.data_code
-  LEFT JOIN cdm5.source_to_concept_map AS sum_map
-      ON sum_map.source_code = additional_int.unit_code AND
-         sum_map.source_vocabulary_id = 'CPRD_UNIT'
-  -- TODO: medcode and prodcode
+  LEFT JOIN cdm5.source_to_concept_map AS unit_map
+      ON unit_map.source_code = additional_int.unit_code AND
+         unit_map.source_vocabulary_id = 'CPRD_UNIT'
   WHERE clinical.eventdate IS NOT NULL AND target_concept.domain_id = 'Measurement'
 ;
