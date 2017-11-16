@@ -35,7 +35,8 @@ def create_intermediate_table(connection, schema, table_name):
                "    data_value INTEGER,"
                "    data_code INTEGER,"
                "    data_date DATE,"
-               "    lookup_type VARCHAR"
+               "    lookup_type VARCHAR,"
+               "    unit_code VARCHAR"
                ")").format(schema, table_name)
     connection.execute(ddl_sql)
 
@@ -57,6 +58,12 @@ def get_additional(connection, schema):
 
 
 def process_row(row):
+    """
+    Contains all logic to split a row with data values in wide to long format.
+    Also filters data values without information.
+    """
+    # TODO: create unit tests
+
     N_DATA_COLUMNS = 7
     patid = row[0]
     enttype = row[1]
@@ -77,6 +84,10 @@ def process_row(row):
         if data_lookup is not None and data_value == '0':
             continue
 
+        # Skip units data
+        if data_lookup == 'SUM':
+            continue
+
         # Dependig on lookup, the data value can be numeric, a code or a date
         data_date = None
         data_code = None
@@ -89,6 +100,12 @@ def process_row(row):
             # All other values with a lookup
             data_code = data_value
 
+        # If next column is a unit, add that to this value. Unit is skipped in next iteration
+        # Exclude unit of zero
+        unit_code = None
+        if i+1 < N_DATA_COLUMNS and data_lookups[i+1] == 'SUM' and str(data_values[i+1]) != '0':
+            unit_code = data_values[i+1]
+
         enttype_string = str(enttype) + '-' + str(i + 1)
 
         sql_value = sql_create_values_string(
@@ -99,7 +116,8 @@ def process_row(row):
             sql_numeric_param(data_numeric),
             sql_numeric_param(data_code),
             sql_date_param(data_date),
-            sql_string_param(data_lookup)
+            sql_string_param(data_lookup),
+            sql_string_param(unit_code)
         )
         yield sql_value
 
@@ -118,7 +136,7 @@ def process_additional(connection, target_table='additional_intermediate', sourc
 
     BLOCK_SIZE = 50000
     SQL_INSERT_BASE = "INSERT INTO {0}.{1} " \
-                      "(patid, adid, enttype_string, datafield_name, data_value, data_code, data_date, lookup_type) " \
+                      "(patid, adid, enttype_string, datafield_name, data_value, data_code, data_date, lookup_type, unit_code) " \
                       "VALUES".format(target_schema, target_table)
 
     total_rows_inserted = 0

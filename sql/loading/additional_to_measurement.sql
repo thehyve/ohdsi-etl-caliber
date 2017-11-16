@@ -46,9 +46,8 @@ INSERT INTO cdm5.measurement
     -- Description of the code belonging to that lookup type
     cprd_lookup.description AS value_source_value,
 
-    -- TODO: unit in rare cases also given
-    NULL AS unit_concept_id,
-    NULL AS unit_source_value
+    sum_map.target_concept_id AS unit_concept_id,
+    additional_int.unit_code AS unit_source_value
 
   FROM public.additional_intermediate as additional_int
   LEFT JOIN caliber_real.clinical AS clinical
@@ -61,6 +60,9 @@ INSERT INTO cdm5.measurement
   LEFT JOIN public.cprd_lookup AS cprd_lookup
       ON cprd_lookup.lookup_type = additional_int.lookup_type AND
          cprd_lookup.code = additional_int.data_code
+  LEFT JOIN cdm5.source_to_concept_map AS sum_map
+      ON sum_map.source_code = additional_int.unit_code AND
+         sum_map.source_vocabulary_id = 'CPRD_UNIT'
   -- TODO: medcode and prodcode
   WHERE clinical.eventdate IS NOT NULL AND target_concept.domain_id = 'Measurement'
 ;
