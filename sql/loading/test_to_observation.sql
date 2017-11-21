@@ -48,7 +48,10 @@ INSERT INTO cdm5.observation
 
     test_intermediate.qualifier_source_value AS qualifier_source_value,
 
-    test_intermediate.unit_concept_id AS unit_concept_id,
+    CASE
+      WHEN test_intermediate.unit_source_value IS NULL THEN NULL
+      ELSE coalesce(test_intermediate.unit_concept_id, 0)
+    END AS unit_concept_id,
 
     test_intermediate.unit_source_value AS unit_source_value
 

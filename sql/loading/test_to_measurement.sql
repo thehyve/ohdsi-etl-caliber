@@ -42,7 +42,7 @@ INSERT INTO cdm5.measurement
 
     test_intermediate.enttype_string AS measurement_source_value,
 
-    -- NOTE: no _source_value of the operator
+    -- NOTE: no _source_value field of the operator
     test_intermediate.operator_concept_id AS operator_concept_id,
 
     test_intermediate.value AS value_as_number,
@@ -52,10 +52,13 @@ INSERT INTO cdm5.measurement
       ELSE coalesce(test_intermediate.qualifier_concept_id, 0)
     END AS value_as_concept_id,
 
-    -- Alternative source value is either the data7 or data8 of entity 311 or 154 or 285
+    -- Alternative source value is either the data7 or data8 of entity type 311 or 154 or 285
     coalesce(test_intermediate.qualifier_source_value, test_intermediate.alternative_source_value) AS value_source_value,
 
-    test_intermediate.unit_concept_id AS unit_concept_id,
+    CASE
+      WHEN test_intermediate.unit_source_value IS NULL THEN NULL
+      ELSE coalesce(test_intermediate.unit_concept_id, 0)
+    END AS unit_concept_id,
 
     test_intermediate.unit_source_value AS unit_source_value,
 

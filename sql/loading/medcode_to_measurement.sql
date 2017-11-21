@@ -1,5 +1,5 @@
 /*
-Load from the medcode_merge: the union of the clinical, referral, test and immunisation tables.
+Load from the medcode_intermediate: the union of the clinical, referral, test and immunisation tables.
 Only include rows with a concept that maps to the Measurement domain or where the source maps to the Measurement domain.
 */
 
@@ -16,24 +16,24 @@ INSERT INTO cdm5.measurement
   measurement_type_concept_id
 )
   SELECT
-    medcode_merge.person_id,
+    medcode_intermediate.person_id,
 
-    medcode_merge._start_date,
+    medcode_intermediate._start_date,
 
-    medcode_merge._start_datetime,
+    medcode_intermediate._start_datetime,
 
-    medcode_merge.visit_occurrence_id,
+    medcode_intermediate.visit_occurrence_id,
 
-    medcode_merge.provider_id,
+    medcode_intermediate.provider_id,
 
-    medcode_merge._concept_id,
+    medcode_intermediate._concept_id,
 
-    medcode_merge._source_concept_id,
+    medcode_intermediate._source_concept_id,
 
-    medcode_merge._source_value,
+    medcode_intermediate._source_value,
 
     -- measurement specific type codes. Note: these types belong to the 'Observation Type' vocabulary
-    CASE medcode_merge.source_table
+    CASE medcode_intermediate.source_table
       WHEN 'clinical' THEN 38000245 -- EHR problem list entry
       WHEN 'referral' THEN 42898140 -- Referral record
       WHEN 'test' THEN 38000280 -- Observation recorded from EHR
@@ -41,6 +41,6 @@ INSERT INTO cdm5.measurement
       ELSE 0
     END AS measurement_type_concept_id
 
-  FROM medcode_merge AS medcode_merge
+  FROM medcode_intermediate AS medcode_intermediate
   WHERE target_domain_id = 'Measurement' OR (target_domain_id ISNULL AND source_domain_id = 'Measurement')
 ;

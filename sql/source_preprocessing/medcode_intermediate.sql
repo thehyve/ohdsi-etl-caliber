@@ -8,7 +8,7 @@ It is possible that one row maps to multiple tables, e.g. vaccinations map both 
 Note: for 30k records, this query takes ~3 seconds in the dev environment
 TODO: create indices on this table (source_table, target_domain_id, source_domain_id)
 */
-DROP TABLE IF EXISTS public.medcode_merge;
+DROP TABLE IF EXISTS public.medcode_intermediate;
 WITH medcode_union (patid, eventdate, constype, consid, medcode, staffid, status, source_table) AS (
   SELECT patid, eventdate, constype, consid, medcode, staffid, NULL, 'clinical'
   FROM caliber.clinical
@@ -62,7 +62,7 @@ SELECT
   -- null if not from immunisation file
   medcode_union.status AS immunisation_status
 
-INTO public.medcode_merge
+INTO public.medcode_intermediate
 
 FROM medcode_union
 LEFT JOIN caliber.medical AS medical
