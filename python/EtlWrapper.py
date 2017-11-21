@@ -84,6 +84,7 @@ class EtlWrapper(object):
 
     def _load_vocabulary_mappings(self):
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
+        self.execute_sql_file('./resources/CPRD_Lookups.sql')
 
     def _prepare_source(self):
         self.execute_sql_file('./sql/source_preprocessing/medcode_merge.sql', True)
@@ -103,7 +104,6 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/person.sql', True)
         self.execute_sql_file('./sql/loading/observation_period.sql', True)
         self.execute_sql_file('./sql/loading/visit_occurrence.sql', True)
-        self.execute_sql_file('./sql/loading/consultation_to_visit_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/medcode_to_condition_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/medcode_to_procedure_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/medcode_to_drug_exposure.sql', True)
@@ -112,6 +112,8 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/medcode_to_device_exposure.sql', True)
         self.execute_sql_file('./sql/loading/test_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/test_to_observation.sql', True)
+        self.execute_sql_file('./sql/loading/therapy_to_drug_exposure.sql', True)
+        self.execute_sql_file('./sql/loading/therapy_to_device_exposure.sql', True)
         self.execute_sql_file('./sql/loading/additional_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
 
@@ -129,6 +131,9 @@ class EtlWrapper(object):
     
         # Execute all sql commands in the file (commands are ; separated)
         # Note: returns result for last command?
+        if verbose:
+            print("Executing {}...".format(filename))
+
         try:
             t1 = time.time()
             result = self.connection.execute(sql_file)

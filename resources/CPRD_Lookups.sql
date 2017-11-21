@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS public.cprd_lookup;
 CREATE TABLE public.cprd_lookup (lookup_type char(3), lookup_name text, code integer, description text);
 
 INSERT INTO public.cprd_lookup VALUES

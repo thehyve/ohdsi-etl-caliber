@@ -6,7 +6,9 @@ WITH cases (expected, actual) AS (
      (4069590, mapCprdLookup('Normal'))
     ,(4082948, mapCprdLookup('A+'))
     ,(4328749, mapCprdLookup('High'))
-    ,(NULL, mapCprdLookup('Random'))
+    ,(0, mapCprdLookup('not a match'))
+    ,(0, mapCprdLookup(''))
+    ,(NULL, mapCprdLookup(NULL))
 )
 SELECT
   CASE

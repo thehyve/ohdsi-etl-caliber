@@ -151,7 +151,7 @@ def process_additional(connection, target_table='additional_intermediate', sourc
 
         sql_insert = SQL_INSERT_BASE + ' ' + ','.join(sql_insert_values)
         insert_result = connection.execute(text(sql_insert))
-        print('Inserted:', insert_result.rowcount)
+        # print('Inserted:', insert_result.rowcount)
 
         # Stop condition if all rows retrieved
         if len(rows) < BLOCK_SIZE:

@@ -1,5 +1,6 @@
 /*
 Mapping of small CPRD lookups. Maps the description to a standard concept.
+If null given, then null returned (STRICT evaluation)
 */
 CREATE OR REPLACE FUNCTION mapCprdLookup(lookupDescription text)
   RETURNS INTEGER AS
@@ -33,7 +34,7 @@ BEGIN
            WHEN 'High'               THEN 4328749
            WHEN 'Negative'           THEN 9189
            WHEN 'Positive'           THEN 9191
-           ELSE NULL
+           ELSE 0 -- 'Not mapped'
        END;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql STRICT;

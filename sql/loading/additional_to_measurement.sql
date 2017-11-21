@@ -43,8 +43,13 @@ INSERT INTO cdm5.measurement
     -- Mapping of the description
     mapCprdLookup(cprd_lookup.description) AS value_as_concept_id,
 
-    -- Description of the code belonging to that lookup type
-    coalesce(cprd_lookup.description, additional_int.data_date :: TEXT, additional_int.lookup_type) AS value_source_value,
+    -- Description of the code belonging to that lookup type, or if no data_code present, the date or lookup_type
+    coalesce(
+        cprd_lookup.description,
+        additional_int.data_code :: TEXT,
+        additional_int.data_date :: TEXT,
+        additional_int.lookup_type
+    ) AS value_as_string,
 
     unit_map.target_concept_id AS unit_concept_id,
 

@@ -1,6 +1,7 @@
 /*
 Create intermediate test table, to determine which fields need mapping.
-Also filters records with qualifier 0 ('Data not entered') and without a value.
+Filter records with qualifier 0 ('Data not entered') for 4 data fields and without a value for 7 or 8 data fields.
+In general, if the lookup code is '0' for the qualifier, operator or unit, then leave the cell empty (NULL).
 TODO: replace schema caliber_real
  */
 DROP TABLE IF EXISTS public.test_intermediate;
@@ -14,11 +15,11 @@ SELECT
   test_intermediate.value                    AS value,
   test_intermediate.range_from               AS range_from,
   test_intermediate.range_to                 AS range_to,
-  test_intermediate.qualifier_tqu            AS qualifier_source_value,
+  NULLIF(test_intermediate.qualifier_tqu,'0')AS qualifier_source_value,
   tqu_map.target_concept_id                  AS qualifier_concept_id,
-  test_intermediate.operator_opr             AS operator_source_value,
+  NULLIF(test_intermediate.operator_opr,'0') AS operator_source_value,
   opr_map.target_concept_id                  AS operator_concept_id,
-  test_intermediate.unit_sum                 AS unit_source_value,
+  NULLIF(test_intermediate.unit_sum,'0')     AS unit_source_value,
   unit_map.target_concept_id                 AS unit_concept_id,
   test_intermediate.alternative_source_value AS alternative_source_value,
   target_enttype_concept.domain_id           AS target_domain_id

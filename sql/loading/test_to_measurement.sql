@@ -47,8 +47,12 @@ INSERT INTO cdm5.measurement
 
     test_intermediate.value AS value_as_number,
 
-    coalesce(test_intermediate.qualifier_concept_id, 0) AS value_as_concept_id,
+    CASE
+      WHEN test_intermediate.qualifier_source_value IS NULL THEN NULL
+      ELSE coalesce(test_intermediate.qualifier_concept_id, 0)
+    END AS value_as_concept_id,
 
+    -- Alternative source value is either the data7 or data8 of entity 311 or 154 or 285
     coalesce(test_intermediate.qualifier_source_value, test_intermediate.alternative_source_value) AS value_source_value,
 
     test_intermediate.unit_concept_id AS unit_concept_id,
