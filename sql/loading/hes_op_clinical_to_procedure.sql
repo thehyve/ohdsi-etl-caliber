@@ -20,8 +20,11 @@ INSERT INTO cdm5.procedure_occurrence
 
     hes_op_appt.apptdate :: TIMESTAMP AS procedure_datetime,
 
-    -- TODO
-    NULL AS visit_occurrence_id,
+    CASE
+      WHEN createHesApptVisitId(hes_op_appt.attendkey, hes_op_clinical.patid) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+      THEN createHesApptVisitId(hes_op_appt.attendkey, hes_op_clinical.patid)
+      ELSE NULL
+    END AS visit_occurrence_id,
 
     COALESCE(target_concept.concept_id,0) AS procedure_concept_id,
 

@@ -33,7 +33,8 @@ INSERT INTO cdm5.visit_occurrence
 
     consultation.staffid                                      AS provider_id,
 
-    44818518                                                  AS visit_type_concept_id -- 'Visit derived from EHR record'
+    -- Visit derived from EHR record
+    44818518                                                  AS visit_type_concept_id
 
   FROM caliber.consultation AS consultation
     JOIN caliber.patient AS patient
@@ -54,16 +55,47 @@ INSERT INTO cdm5.visit_occurrence
     -- Use start date if no end date available
     coalesce(hes_diag_hosp.discharged, hes_diag_hosp.admidate) AS visit_end_date,
 
+    -- Inpatient Visit
     9201                                                       AS visit_concept_id,
 
-    -- Inpatient visit
     'hes_diag_hosp'                                            AS visit_source_value,
 
     NULL                                                       AS provider_id,
 
-    44818518                                                   AS visit_type_concept_id -- Visit derived from EHR record
+    -- Visit derived from EHR record
+    44818518                                                   AS visit_type_concept_id
 
   FROM caliber.hes_diag_hosp AS hes_diag_hosp
     JOIN caliber.patient AS patient
       ON hes_diag_hosp.patid = patient.patid
-  WHERE hes_diag_hosp.admidate IS NOT NULL;
+  WHERE hes_diag_hosp.admidate IS NOT NULL
+
+  UNION ALL
+
+  SELECT DISTINCT ON (hes_op_appt.attendkey, hes_op_appt.patid)
+    -- 18 digit long integer, consisting of attendkey concatenated with (part of) patientid
+    createhesapptvisitid(hes_op_appt.attendkey, hes_op_appt.patid) AS visit_occurrence_id,
+
+    hes_op_appt.patid                                          AS person_id,
+
+    patient.pracid                                             AS care_site_id,
+
+    hes_op_appt.apptdate                                       AS visit_start_date,
+    
+    hes_op_appt.apptdate                                       AS visit_end_date,
+
+    -- Outpatient visit
+    9202                                                       AS visit_concept_id,
+
+    'hes_op_appt'                                              AS visit_source_value,
+
+    NULL                                                       AS provider_id,
+    
+    -- Visit derived from EHR record
+    44818518                                                   AS visit_type_concept_id
+
+  FROM caliber.hes_op_appt AS hes_op_appt
+    JOIN caliber.patient AS patient
+      ON hes_op_appt.patid = patient.patid
+  WHERE hes_op_appt.apptdate IS NOT NULL
+;
