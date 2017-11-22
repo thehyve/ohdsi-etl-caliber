@@ -43,4 +43,6 @@ INSERT INTO cdm5.procedure_occurrence
       ON hes_proc_epi.opcs = replace(concept_code, '.', '')
          AND vocabulary_id = 'OPCS4'
          AND standard_concept = 'S'
+  WHERE hes_proc_epi.opcs IS NOT NULL
+        AND hes_proc_epi.opcs NOT IN ('&', '&amp;')
 ;

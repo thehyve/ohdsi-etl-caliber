@@ -65,18 +65,19 @@ SELECT
 INTO public.medcode_intermediate
 
 FROM medcode_union
-LEFT JOIN caliber.medical AS medical
-  ON medcode_union.medcode = medical.medcode
-LEFT JOIN cdm5.concept AS source_concept
-  ON medical.readcode = source_concept.concept_code
-  AND source_concept.vocabulary_id = 'Read'
-LEFT JOIN cdm5.concept_relationship AS mapping
-  ON source_concept.concept_id = mapping.concept_id_1
-  AND mapping.relationship_id = 'Maps to'
-LEFT JOIN cdm5.concept as target_concept
-  ON mapping.concept_id_2 = target_concept.concept_id
-  AND target_concept.invalid_reason IS NULL
-WHERE eventdate IS NOT NULL AND medcode_union.medcode > 0
+  LEFT JOIN caliber.medical AS medical
+    ON medcode_union.medcode = medical.medcode
+  LEFT JOIN cdm5.concept AS source_concept
+    ON medical.readcode = source_concept.concept_code
+    AND source_concept.vocabulary_id = 'Read'
+  LEFT JOIN cdm5.concept_relationship AS mapping
+    ON source_concept.concept_id = mapping.concept_id_1
+    AND mapping.relationship_id = 'Maps to'
+  LEFT JOIN cdm5.concept as target_concept
+    ON mapping.concept_id_2 = target_concept.concept_id
+    AND target_concept.invalid_reason IS NULL
+  -- Only include rows with date, and valid medcode (0 = NULL and 14 = 'ZZZZZ00'	'_Converted code')
+  WHERE eventdate IS NOT NULL AND medcode_union.medcode > 0 AND medcode_union.medcode != 14
 ;
 
 
