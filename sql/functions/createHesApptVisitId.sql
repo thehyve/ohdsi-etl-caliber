@@ -7,7 +7,10 @@ However, incorporating the whole patientId is not possible (bigint max 19 places
 CREATE OR REPLACE FUNCTION createHesApptVisitId(attendkey TEXT, patientId INTEGER)
   RETURNS BIGINT AS
 $$
+DECLARE
+  patientId6 TEXT;
 BEGIN
-  RETURN CAST(rpad(attendkey, 18, patientId :: TEXT) AS BIGINT);
+  patientId6 := lpad(patientId :: TEXT, 6, '0');
+  RETURN CAST(attendkey || patientId6 AS BIGINT);
 END;
 $$ LANGUAGE plpgsql;
