@@ -19,14 +19,16 @@ import click
               help='Source schema containing with CALIBER tables')
 @click.option('--target_schema', '-t', default='cdm5', metavar='<schema_name>',
               help='Target schema where OMOP CDM tables are created')
-def main(database, username, password, hostname, port, source_schema, target_schema):
+@click.option('--debug', default=False, metavar='<debug_mode>', is_flag=True,
+              help='In debug mode, the PK constraints are applied before loading')
+def main(database, username, password, hostname, port, source_schema, target_schema, debug):
     """Execute the ETL procedure
     Dependencies: sqlalchemy and click
     """
     # Connect to database
     eng = create_engine('postgresql://%s:%s@%s:%s/%s' % (username, password, hostname, port, database))
     with eng.connect() as connection:
-        etl = EtlWrapper(connection, source_schema, target_schema)
+        etl = EtlWrapper(connection, source_schema, target_schema, debug)
         etl.execute()
 
 if __name__ == "__main__":

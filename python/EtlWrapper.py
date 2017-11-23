@@ -1,3 +1,4 @@
+import os
 import re
 import time
 from python.process_additional import process_additional
@@ -24,16 +25,21 @@ def create_insert_message(sql_command, row_count, execution_time=None):
 
 
 def create_message(table_into, row_count, execution_time):
-    return 'Inserted into {:<35} {:>9,} [{:>8.2f} s]'.format(table_into, row_count, execution_time)
+    return 'Into {:<35} {:>9,} [{:>8.2f} s]'.format(table_into, row_count, execution_time)
 
 
 class EtlWrapper(object):
-    """ This module coordinates the execution of the sql files """
+    """ This module coordinates the execution of the sql files
+        If debug mode is on, the primary key constraints are applied before loading
+        to get direct feedback if there are issues. This does make loading slower.
+        TODO: if loading order correct, also apply foreign keys before loading.
+    """
 
-    def __init__(self, connection, source_schema, target_schema):
+    def __init__(self, connection, source_schema, target_schema, debug):
         self.connection = connection
         self.source_schema = source_schema
         self.target_schema = target_schema
+        self.debug = debug
         self.n_queries_executed = 0
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
@@ -61,11 +67,16 @@ class EtlWrapper(object):
         # Loading
         self._load()
 
+        # Constraints and Indices
+        self._apply_constraints()  # fails in debug mode
+        self._apply_indexes()
+
         self.print_summary_message()
 
     def _create_functions(self):
         self.execute_sql_file('./sql/functions/createEndDate.sql')
         self.execute_sql_file('./sql/functions/createVisitId.sql')
+        self.execute_sql_file('./sql/functions/createHesApptVisitId.sql')
         self.execute_sql_file('./sql/functions/mapCprdLookup.sql')
         # TODO: execute unit tests?
         print("Sql functions created or replaced")
@@ -77,6 +88,9 @@ class EtlWrapper(object):
 
         self.execute_sql_file('./sql/cdm_prepare/OMOP CDM ddl - NonVocabulary.sql')
         print("CDMv5.2 tables created")
+
+        if self.debug:
+            self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - PK - NonVocabulary.sql', False)
 
         self.execute_sql_file('./sql/cdm_prepare/alter_cdm.sql')
         self.execute_sql_file('./sql/cdm_prepare/create_id_sequence.sql')
@@ -92,12 +106,13 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
         t1 = time.time()
+        print("{:<30.30} => ".format(os.path.basename('additional_intermediate')), end='')
         row_count = process_additional(self.connection, target_table='additional_intermediate', target_schema='public')
         self.total_rows_inserted += row_count
-        print(create_message('public.additional_intermediate', row_count, time.time()-t1))
+        print(create_message('public.additional_intermediate', row_count, time.time() - t1))
 
     def _load(self):
-        # TODO: is this the correct order?
+        # TODO: put in a logical order
         self.execute_sql_file('./sql/loading/location.sql', True)
         self.execute_sql_file('./sql/loading/care_site.sql', True)
         self.execute_sql_file('./sql/loading/provider.sql', True)
@@ -116,6 +131,17 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/therapy_to_device_exposure.sql', True)
         self.execute_sql_file('./sql/loading/additional_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
+        self.execute_sql_file('./sql/loading/hes_proc_epi_to_procedure.sql', True)
+        self.execute_sql_file('./sql/loading/hes_op_clinical_to_procedure.sql', True)
+
+    def _apply_constraints(self):
+        print("Applying constraints...")
+        self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - PK - NonVocabulary.sql', False)
+        self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - FK - NonVocabulary.sql', False)
+
+    def _apply_indexes(self):
+        print("Applying indexes...")
+        self.execute_sql_file('./sql/cdm_prepare/OMOP CDM indexes required - NonVocabulary.sql', False)
 
     def print_summary_message(self):
         print()
@@ -125,26 +151,31 @@ class EtlWrapper(object):
 
     def execute_sql_file(self, filename, verbose=False):
         # Open and read the file as a single buffer
-        fd = open(filename, 'r')
-        sql_file = fd.read()
-        fd.close()
-    
+        f = open(filename, 'r')
+        query = f.read().strip()
+        f.close()
+
         # Execute all sql commands in the file (commands are ; separated)
         # Note: returns result for last command?
         if verbose:
-            print("Executing {}...".format(filename))
+            print("{:<30.30} => ".format(os.path.basename(filename)), end='')
 
         try:
             t1 = time.time()
-            result = self.connection.execute(sql_file)
+            result = self.connection.execute(query)
             time_delta = time.time() - t1
         except Exception as msg:
-            print("Command in '%s' failed: %s" % (filename, msg))
+            error = msg.args[0].split('\n')[0]
+            if verbose:
+                print("###") #newline before error
+            print("Query in '%s' failed:" % filename)
+            print("\t", error)
+            # TODO: create log of this error
             self.n_queries_failed += 1
             return
-    
+
         if verbose:
-            message = create_insert_message(sql_file, result.rowcount, time_delta)
+            message = create_insert_message(query, result.rowcount, time_delta)
             print(message)
 
         # Note: only tracks row count correctly if 1 insert per file and no update/delete scripts
