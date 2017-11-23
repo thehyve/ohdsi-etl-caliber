@@ -9,7 +9,7 @@ def create_insert_message(sql_command, row_count, execution_time=None):
     if row_count >= 0:
         table_into = '?'
 
-        # TODO: multiple into's? => rowcount only about last
+        # NOTE: if multiple queries, then rowcount only last number of inserted/updated rows
         match_into = re.search(r'INTO (.+?)\s', sql_command)
         if match_into:
             table_into = match_into.group(1)
@@ -27,6 +27,8 @@ def create_insert_message(sql_command, row_count, execution_time=None):
 def create_message(table_into, row_count, execution_time):
     return 'Into {:<35} {:>9,} [{:>8.2f} s]'.format(table_into, row_count, execution_time)
 
+def print_current_file_message(filename):
+    print("{:<30.30} => ".format(os.path.basename(filename)), end='', flush=True)
 
 class EtlWrapper(object):
     """ This module coordinates the execution of the sql files
@@ -67,11 +69,11 @@ class EtlWrapper(object):
         # Loading
         self._load()
 
+        self.print_summary_message()
+
         # Constraints and Indices
         self._apply_constraints()  # fails in debug mode
         self._apply_indexes()
-
-        self.print_summary_message()
 
     def _create_functions(self):
         self.execute_sql_file('./sql/functions/createEndDate.sql')
@@ -106,7 +108,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
         t1 = time.time()
-        print("{:<30.30} => ".format(os.path.basename('additional_intermediate')), end='')
+        print_current_file_message('additional_intermediate')
         row_count = process_additional(self.connection, target_table='additional_intermediate', target_schema='public')
         self.total_rows_inserted += row_count
         print(create_message('public.additional_intermediate', row_count, time.time() - t1))
@@ -145,9 +147,10 @@ class EtlWrapper(object):
 
     def print_summary_message(self):
         print()
-        print("Queries succesfully executed: %d" % self.n_queries_executed)
+        print("Queries successfully executed: %d" % self.n_queries_executed)
         print("Queries failed: %d" % self.n_queries_failed)
         print("Rows inserted: {:,}".format(self.total_rows_inserted))
+        print()
 
     def execute_sql_file(self, filename, verbose=False):
         # Open and read the file as a single buffer
@@ -158,7 +161,7 @@ class EtlWrapper(object):
         # Execute all sql commands in the file (commands are ; separated)
         # Note: returns result for last command?
         if verbose:
-            print("{:<30.30} => ".format(os.path.basename(filename)), end='')
+            print_current_file_message(filename)
 
         try:
             t1 = time.time()

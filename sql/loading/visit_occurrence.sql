@@ -43,7 +43,7 @@ INSERT INTO cdm5.visit_occurrence
 
   UNION ALL
 
-  SELECT DISTINCT ON (hes_diag_hosp.patid)
+  SELECT DISTINCT ON (hes_diag_hosp.spno)
     hes_diag_hosp.spno                                         AS visit_occurrence_id,
 
     hes_diag_hosp.patid                                        AS person_id,
@@ -72,8 +72,8 @@ INSERT INTO cdm5.visit_occurrence
 
   UNION ALL
 
-  SELECT DISTINCT ON (hes_op_appt.attendkey, hes_op_appt.patid)
-    -- 18 digit long integer, consisting of attendkey concatenated with (part of) patientid
+  SELECT DISTINCT ON (hes_op_appt.attendkey, left(hes_op_appt.patid :: TEXT,6))
+    -- 18 digit long integer, consisting of record id concatenated with patient id
     createhesapptvisitid(hes_op_appt.attendkey, hes_op_appt.patid) AS visit_occurrence_id,
 
     hes_op_appt.patid                                          AS person_id,
