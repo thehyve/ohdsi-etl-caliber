@@ -32,7 +32,7 @@ def create_intermediate_table(connection, schema, table_name):
                "    adid INTEGER,"
                "    enttype_string VARCHAR,"
                "    datafield_name VARCHAR,"
-               "    data_value INTEGER,"
+               "    data_value NUMERIC,"
                "    data_code INTEGER,"
                "    data_date DATE,"
                "    lookup_type VARCHAR,"
@@ -68,9 +68,32 @@ def process_row(row):
     patid = row[0]
     enttype = row[1]
     adid = row[2]
+
     data_values = row[3:3+N_DATA_COLUMNS]
     data_names = row[3+N_DATA_COLUMNS:3+N_DATA_COLUMNS*2]
     data_lookups = row[3+N_DATA_COLUMNS*2:]
+
+    # Special case for score
+    if enttype == 372:
+        # Concatenate enttype-data2-data3
+        enttype_string = '-'.join([str(enttype), data_values[2], data_values[1]])
+
+        data_numeric = data_values[0]
+        data_name = data_names[0]
+        sql_value = sql_create_values_string(
+            sql_numeric_param(patid),
+            sql_numeric_param(adid),
+            sql_string_param(enttype_string),
+            sql_string_param(data_name),
+            sql_numeric_param(data_numeric),
+            sql_numeric_param(None),
+            sql_date_param(None),
+            sql_string_param(None),
+            sql_string_param(None)
+        )
+        yield sql_value
+        raise StopIteration
+
     for i in range(N_DATA_COLUMNS):
         data_value = data_values[i]
         data_name = data_names[i]
@@ -101,7 +124,7 @@ def process_row(row):
             data_code = data_value
 
         # If next column is a unit, add that to this value. Unit is skipped in next iteration
-        # Exclude unit of zero
+        # Exclude unit lookup code '0'
         unit_code = None
         if i+1 < N_DATA_COLUMNS and data_lookups[i+1] == 'SUM' and str(data_values[i+1]) != '0':
             unit_code = data_values[i+1]
@@ -145,8 +168,8 @@ def process_additional(connection, target_table='additional_intermediate', sourc
         sql_insert_values = []
         rows = additional_table.fetchmany(BLOCK_SIZE)
         for row in rows:
-            for value in process_row(row):
-                sql_insert_values.append(value)
+            for sql_value in process_row(row):
+                sql_insert_values.append(sql_value)
                 total_rows_inserted += 1
 
         sql_insert = SQL_INSERT_BASE + ' ' + ','.join(sql_insert_values)

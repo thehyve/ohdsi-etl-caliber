@@ -30,8 +30,12 @@ INSERT INTO cdm5.measurement
     ELSE NULL
     END AS visit_occurrence_id,
 
-    -- Lab Result
-    44818702 AS measurement_type_concept_id,
+    CASE WHEN additional_int.enttype_string LIKE '372%'
+      -- Patient Reported Value
+      THEN 44818704
+      -- Lab Result
+      ELSE 44818702
+    END AS measurement_type_concept_id,
 
     coalesce(enttype_map.target_concept_id, 0) AS measurement_concept_id,
 
@@ -60,7 +64,7 @@ INSERT INTO cdm5.measurement
     ON clinical.adid =  additional_int.adid
   LEFT JOIN cdm5.source_to_concept_map AS enttype_map
       ON enttype_map.source_code = additional_int.enttype_string AND
-         enttype_map.source_vocabulary_id = 'JNJ_CPRD_ET_LOINC'
+         enttype_map.source_vocabulary_id IN ('JNJ_CPRD_ET_LOINC','JNJ_CPRD_SCORE_LOINC')
   LEFT JOIN cdm5.concept AS target_concept
       ON target_concept.concept_id = enttype_map.target_concept_id
   LEFT JOIN public.cprd_lookup AS cprd_lookup
