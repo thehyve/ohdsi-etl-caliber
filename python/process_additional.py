@@ -33,7 +33,7 @@ def create_intermediate_table(connection, schema, table_name):
                "    enttype_string VARCHAR,"
                "    datafield_name VARCHAR,"
                "    data_value NUMERIC,"
-               "    data_code INTEGER,"
+               "    data_code TEXT,"
                "    data_date DATE,"
                "    lookup_type VARCHAR,"
                "    unit_code VARCHAR"
@@ -137,7 +137,7 @@ def process_row(row):
             sql_string_param(enttype_string),
             sql_string_param(data_name),
             sql_numeric_param(data_numeric),
-            sql_numeric_param(data_code),
+            sql_string_param(data_code),
             sql_date_param(data_date),
             sql_string_param(data_lookup),
             sql_string_param(unit_code)
