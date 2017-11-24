@@ -1,4 +1,6 @@
--- Find the OMOP concept_id for a given ICD10 code
+-- Find the OMOP concept_id for a given ICD9/10 code if no direct match can be found
+-- In each iteration the last character will be truncated from the code to search for a (more general) match
+-- If no match can be found for the first three characters, NULL will be returned
 
 CREATE OR REPLACE FUNCTION mapIcdCode(code CHAR)
   RETURNS INTEGER
