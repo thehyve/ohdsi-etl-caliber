@@ -45,15 +45,17 @@ INSERT INTO cdm5.measurement
     -- Numeric value
     additional.data_value as value_as_number,
 
-    -- Mapping of the description
+    -- Mapping of the description. NULL if no mapping available
     mapCprdLookup(cprd_lookup.description) AS value_as_concept_id,
 
-    -- Description of the code belonging to that lookup type, or if no data_code present, the date or lookup_type
+    -- Description of the code belonging to that lookup type, product code or medical code.
+    -- If no description available, insert date. If date field empty, then insert datafield name.
     coalesce(
         cprd_lookup.description,
-        additional.data_code,
+        product.productname,
+        medical.readterm,
         additional.data_date :: TEXT,
-        additional.lookup_type
+        additional.datafield_name
     ) AS value_as_string,
 
     unit_map.target_concept_id AS unit_concept_id,
@@ -73,5 +75,11 @@ INSERT INTO cdm5.measurement
   LEFT JOIN cdm5.source_to_concept_map AS unit_map
       ON unit_map.source_code = additional.unit_code AND
          unit_map.source_vocabulary_id = 'CPRD_UNIT'
+  LEFT JOIN caliber.product AS product
+    ON additional.lookup_type = 'Product Dictionary' AND
+       additional.data_code = product.prodcode :: TEXT
+  LEFT JOIN caliber.medical AS medical
+    ON additional.lookup_type = 'Medical Dictionary' AND
+       additional.data_code = medical.medcode :: TEXT
   WHERE clinical.eventdate IS NOT NULL AND target_concept.domain_id = 'Measurement'
 ;

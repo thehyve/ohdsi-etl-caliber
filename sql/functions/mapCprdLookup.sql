@@ -1,6 +1,7 @@
 /*
 Mapping of small CPRD lookups. Maps the description to a standard concept.
 If null given, then null returned (STRICT evaluation)
+TODO: create this as a source_to_concept_map for better maintainability
 */
 CREATE OR REPLACE FUNCTION mapCprdLookup(lookupDescription text)
   RETURNS INTEGER AS
