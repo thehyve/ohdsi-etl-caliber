@@ -25,7 +25,10 @@ INSERT INTO cdm5.death
 
     patient.patid                              AS person_id,
     coalesce(ons_death.dod, patient.deathdate) AS death_date,
-    38003569                                   AS death_type_concept_id, -- EHR record
+
+    -- EHR record
+    38003569                                   AS death_type_concept_id,
+
     snomed_code.concept_id_2                   AS cause_concept_id,
     ons_death.cause                            AS cause_source_value,
     icd_concept_code.icd_match                 AS cause_source_concept_id

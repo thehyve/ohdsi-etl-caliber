@@ -26,7 +26,7 @@ WITH death AS (
 SELECT
   patid,
   obs_period_start_date,
-  obs_period_end_date,
+  coalesce(obs_period_end_date, to_date('20160308', 'yyyymmdd')), -- Fallback date
   obs_period_start_date < obs_period_end_date AS valid_obs_period
 INTO caliber.obs_period_validity
 FROM obs_period_dates;

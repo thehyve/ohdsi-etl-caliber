@@ -19,9 +19,10 @@ INSERT INTO cdm5.observation_period
     44814725                                        AS period_type_concept_id
 
   FROM caliber.patient pat
-    LEFT JOIN caliber.practice prac ON pat.pracid = prac.pracid
-    LEFT JOIN caliber.ons_death od ON pat.patid = od.patid
-    -- LEFT JOIN caliber.linkage_coverage
+    LEFT JOIN caliber.practice prac
+      ON pat.pracid = prac.pracid
+    LEFT JOIN caliber.ons_death od
+      ON pat.patid = od.patid
     LEFT JOIN caliber.obs_period_validity obs_validity
       ON pat.patid = obs_validity.patid
   WHERE obs_validity.valid_obs_period IS NOT FALSE;
