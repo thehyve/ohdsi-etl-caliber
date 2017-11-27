@@ -3,6 +3,11 @@
 ## Dependencies
 - Postgres (9.5.9)
   - Pl/Python
+  ```bash
+  select version();
+  sudo apt-get install postgresql-plpython3-<postgresql version>
+  CREATE EXTENSION plpython3u;
+  ```
 - Python 3, with the following installed using `pip install <package_name>`:
   - click
   - sqlalchemy

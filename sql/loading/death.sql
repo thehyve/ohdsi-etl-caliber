@@ -10,6 +10,7 @@ INSERT INTO cdm5.death
   cause_source_concept_id
 )
 
+  -- TODO: can be removed in production (one person should have one death)
   WITH best_icd_match AS (
       SELECT DISTINCT ON (ons_death.patid)
         ons_death.patid,
@@ -42,5 +43,5 @@ INSERT INTO cdm5.death
       ON patient.patid = icd_concept_code.patid
     LEFT JOIN cdm5.concept_relationship snomed_code
       ON icd_concept_code.icd_match = snomed_code.concept_id_1 AND snomed_code.relationship_id = 'Maps to'
-  WHERE obs_period_validity.valid_obs_period IS NOT FALSE
+  WHERE obs_period_validity.valid_obs_period IS NOT FALSE -- also allow NULL
         AND (ons_death.dod IS NOT NULL OR patient.deathdate IS NOT NULL);

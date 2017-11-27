@@ -80,6 +80,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/functions/createVisitId.sql')
         self.execute_sql_file('./sql/functions/createHesApptVisitId.sql')
         self.execute_sql_file('./sql/functions/mapCprdLookup.sql')
+        self.execute_sql_file('./sql/functions/mapIcdCode.sql')
         # TODO: execute unit tests?
         print("Sql functions created or replaced")
 
@@ -107,6 +108,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
+
         t1 = time.time()
         print_current_file_message('additional_intermediate')
         row_count = process_additional(self.connection, target_table='additional_intermediate', target_schema='public')
@@ -135,6 +137,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/hes_proc_epi_to_procedure.sql', True)
         self.execute_sql_file('./sql/loading/hes_op_clinical_to_procedure.sql', True)
+        self.execute_sql_file('./sql/loading/death.sql', True)
 
     def _apply_constraints(self):
         print("Applying constraints...")
