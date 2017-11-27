@@ -52,12 +52,10 @@ SELECT
 
   medcode_union.medcode AS _source_value,
 
-  /** Following tables have different logic depending on the domain **/
   medcode_union.source_table AS source_table,
 
-  source_concept.domain_id AS source_domain_id,
-
-  target_concept.domain_id AS target_domain_id,
+  -- domain_id from standard concept or, if unavailable, from source READ concept
+  coalesce(target_concept.domain_id, source_concept.domain_id) AS target_domain_id,
 
   -- null if not from immunisation file
   medcode_union.status AS immunisation_status
@@ -68,16 +66,15 @@ FROM medcode_union
   LEFT JOIN caliber.medical AS medical
     ON medcode_union.medcode = medical.medcode
   LEFT JOIN cdm5.concept AS source_concept
-    ON medical.readcode = source_concept.concept_code
-    AND source_concept.vocabulary_id = 'Read'
+    ON medical.readcode = source_concept.concept_code AND
+       source_concept.vocabulary_id = 'Read'
   LEFT JOIN cdm5.concept_relationship AS mapping
-    ON source_concept.concept_id = mapping.concept_id_1
-    AND mapping.relationship_id = 'Maps to'
-  LEFT JOIN cdm5.concept as target_concept
-    ON mapping.concept_id_2 = target_concept.concept_id
-    AND target_concept.invalid_reason IS NULL
+    ON source_concept.concept_id = mapping.concept_id_1 AND
+       mapping.relationship_id = 'Maps to' AND
+       mapping.invalid_reason IS NULL
+  LEFT JOIN cdm5.concept AS target_concept
+    ON mapping.concept_id_2 = target_concept.concept_id AND
+       target_concept.invalid_reason IS NULL
   -- Only include rows with date, and valid medcode (0 = NULL and 14 = 'ZZZZZ00'	'_Converted code')
   WHERE eventdate IS NOT NULL AND medcode_union.medcode > 0 AND medcode_union.medcode != 14
 ;
-
-

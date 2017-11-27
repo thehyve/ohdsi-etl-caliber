@@ -36,5 +36,5 @@ INSERT INTO cdm5.device_exposure
     44818707 AS device_type_concept_id
 
   FROM medcode_intermediate AS medcode_intermediate
-  WHERE target_domain_id = 'Device' OR (target_domain_id ISNULL AND source_domain_id = 'Device')
+  WHERE target_domain_id = 'Device'
 ;

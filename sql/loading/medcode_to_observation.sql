@@ -43,7 +43,6 @@ INSERT INTO cdm5.observation
     END AS observation_type_concept_id
 
   FROM medcode_intermediate AS medcode_intermediate
-  WHERE target_domain_id = 'Observation' OR
-        (target_domain_id ISNULL AND source_domain_id = 'Observation') OR
-        (source_domain_id ISNULL OR source_domain_id = 'None')
+  -- All 'others'
+  WHERE target_domain_id NOT IN ('Condition','Device','Drug','Measurement', 'Procedure')
 ;

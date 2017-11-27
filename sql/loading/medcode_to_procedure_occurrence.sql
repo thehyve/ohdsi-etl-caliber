@@ -42,5 +42,9 @@ INSERT INTO cdm5.procedure_occurrence
     END AS procedure_type_concept_id
 
   FROM medcode_intermediate AS medcode_intermediate
-  WHERE target_domain_id = 'Procedure' OR (target_domain_id ISNULL AND source_domain_id = 'Procedure')
+  -- If from immunisation table, the immunisation status has to be 'Given'
+  WHERE target_domain_id = 'Procedure' AND (
+    medcode_intermediate.immunisation_status = 'Given' OR
+    lower(medcode_intermediate.source_table) NOT LIKE 'immunisation'
+  )
 ;

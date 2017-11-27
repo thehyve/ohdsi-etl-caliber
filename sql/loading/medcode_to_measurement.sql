@@ -42,5 +42,5 @@ INSERT INTO cdm5.measurement
     END AS measurement_type_concept_id
 
   FROM medcode_intermediate AS medcode_intermediate
-  WHERE target_domain_id = 'Measurement' OR (target_domain_id ISNULL AND source_domain_id = 'Measurement')
+  WHERE target_domain_id = 'Measurement'
 ;
