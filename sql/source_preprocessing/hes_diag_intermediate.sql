@@ -1,5 +1,7 @@
 /**
 Intermediate table for all (non-empty) hes diagnosis codes (icd).
+Combines diagnoses from two hes tables: hes_op_clinical and hes_diag_epi (episodes)
+Pre-processes the mapping from icd10 to a standard target concept id
  */
 DROP TABLE IF EXISTS public.hes_diagnoses_intermediate;
 
@@ -43,7 +45,11 @@ WITH hes_diagnoses(
 
     hes_diag_epi.epistart AS date,
 
-    hes_diag_epi.spno AS visit_occurrence_id,
+    CASE
+      WHEN hes_diag_epi.spno IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+        THEN hes_diag_epi.spno
+      ELSE NULL
+    END AS visit_occurrence_id,
 
     hes_diag_epi.icd AS icd_code,
 

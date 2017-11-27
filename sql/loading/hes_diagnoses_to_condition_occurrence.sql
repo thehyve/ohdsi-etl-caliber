@@ -28,28 +28,9 @@ SELECT
 
   hes_diagnoses.icd_code AS condition_source_value,
 
-  -- TODO: inpatient vs outpatient distinction from hes_diagnoses.provenance
   CASE diagnosis_position
-    WHEN  1 THEN 38000184
-    WHEN  2 THEN 38000185
-    WHEN  3 THEN 38000186
-    WHEN  4 THEN 38000187
-    WHEN  5 THEN 38000188
-    WHEN  6 THEN 38000189
-    WHEN  7 THEN 38000190
-    WHEN  8 THEN 38000191
-    WHEN  9 THEN 38000192
-    WHEN 10 THEN 38000193
-    WHEN 11 THEN 38000194
-    WHEN 12 THEN 38000195
-    WHEN 13 THEN 38000196
-    WHEN 14 THEN 38000197
-    WHEN 15 THEN 38000198
-    WHEN 16 THEN 44818709
-    WHEN 17 THEN 44818710
-    WHEN 18 THEN 44818711
-    WHEN 19 THEN 44818712
-    ELSE 44818713
+    WHEN  1 THEN 44786627 -- Primary condition
+    ELSE 44786629 -- Secondary condition
   END AS condition_type_concept_id,
 
   hes_diagnoses.provider_id AS provider_id
