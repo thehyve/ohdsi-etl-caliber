@@ -7,6 +7,8 @@ WITH cases (expected, actual) AS (
     (44833450, mapicdcode('349x')), -- full ICD9 map
     (45756398, mapicdcode('X42.0x')), -- Maps to X42
     (42616305, mapicdcode('M00.0000000')), -- Maps to M00.00
+    (45591453, mapicdcode('I10')), -- full ICD10 map on complete given code
+    (45568120, mapicdcode('R20.2')),
     (NULL, mapicdcode('QWERTY')), -- No map
     (NULL, mapicdcode('')), -- No map
     (NULL, mapicdcode(NULL)) -- No map

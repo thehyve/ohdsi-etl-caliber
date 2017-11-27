@@ -7,7 +7,7 @@ CREATE OR REPLACE FUNCTION mapIcdCode(code CHAR)
 AS $$
   if not code:
     return None
-  icd_code = code[:-1]
+  icd_code = code
   icd10 = False if (icd_code and icd_code[0].isnumeric()) else True
 
   query = "SELECT concept_id FROM cdm5.concept WHERE concept_code = '{0}' AND vocabulary_id = '{1}';"

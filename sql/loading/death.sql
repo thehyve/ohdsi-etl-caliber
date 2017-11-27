@@ -1,4 +1,3 @@
---TRUNCATE cdm5.death;
 
 INSERT INTO cdm5.death
 (
@@ -10,7 +9,6 @@ INSERT INTO cdm5.death
   cause_source_concept_id
 )
 
-  -- TODO: can be removed in production (one person should have one death)
   WITH best_icd_match AS (
       SELECT DISTINCT ON (ons_death.patid)
         ons_death.patid,
@@ -34,14 +32,16 @@ INSERT INTO cdm5.death
     ons_death.cause                            AS cause_source_value,
     icd_concept_code.icd_match                 AS cause_source_concept_id
 
-  FROM caliber.patient patient
-    LEFT JOIN caliber.ons_death ons_death
+  FROM caliber.patient AS patient
+    LEFT JOIN caliber.ons_death AS ons_death
       ON patient.patid = ons_death.patid
-    LEFT JOIN caliber.obs_period_validity obs_period_validity
+    LEFT JOIN caliber.obs_period_validity AS obs_period_validity
       ON patient.patid = obs_period_validity.patid
-    LEFT JOIN best_icd_match icd_concept_code
+    LEFT JOIN best_icd_match AS icd_concept_code
       ON patient.patid = icd_concept_code.patid
-    LEFT JOIN cdm5.concept_relationship snomed_code
-      ON icd_concept_code.icd_match = snomed_code.concept_id_1 AND snomed_code.relationship_id = 'Maps to'
+    LEFT JOIN cdm5.concept_relationship AS snomed_code
+      ON icd_concept_code.icd_match = snomed_code.concept_id_1 AND
+         snomed_code.relationship_id = 'Maps to' AND
+         snomed_code.invalid_reason IS NULL
   WHERE obs_period_validity.valid_obs_period IS NOT FALSE -- also allow NULL
         AND (ons_death.dod IS NOT NULL OR patient.deathdate IS NOT NULL);
