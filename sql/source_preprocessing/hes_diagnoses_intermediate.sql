@@ -36,7 +36,7 @@ WITH hes_diagnoses(
 
   FROM caliber.hes_op_clinical_diag AS hes_op_clinical_diag
     JOIN caliber.hes_op_clinical AS hes_op_clinical USING (patid, attendkey)
-    JOIN caliber.hes_op_appt AS hes_op_appt USING (patid) --, attendkey)
+    JOIN caliber.hes_op_appt AS hes_op_appt USING (patid, attendkey)
 
   UNION ALL
 

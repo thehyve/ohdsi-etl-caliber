@@ -106,6 +106,7 @@ class EtlWrapper(object):
     def _prepare_source(self):
         self.execute_sql_file('./sql/source_preprocessing/medcode_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
+        self.execute_sql_file('./sql/source_preprocessing/hes_diagnoses_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
 
@@ -136,8 +137,12 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/additional_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/hes_proc_epi_to_procedure.sql', True)
-        self.execute_sql_file('./sql/loading/hes_op_clinical_to_procedure.sql', True)
+        self.execute_sql_file('./sql/loading/hes_op_clinical_proc_to_procedure_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/death.sql', True)
+        self.execute_sql_file('./sql/loading/hes_diagnoses_to_condition_occurrence.sql', True)
+        self.execute_sql_file('./sql/loading/hes_diagnoses_to_procedure_occurrence.sql', True)
+        self.execute_sql_file('./sql/loading/hes_diagnoses_to_observation.sql', True)
+        self.execute_sql_file('./sql/loading/hes_diagnoses_to_measurement.sql', True)
 
     def _apply_constraints(self):
         print("Applying constraints...")
