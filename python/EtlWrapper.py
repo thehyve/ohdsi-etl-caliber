@@ -34,7 +34,6 @@ class EtlWrapper(object):
     """ This module coordinates the execution of the sql files
         If debug mode is on, the primary key constraints are applied before loading
         to get direct feedback if there are issues. This does make loading slower.
-        TODO: if loading order correct, also apply foreign keys before loading.
     """
 
     def __init__(self, connection, source_schema, target_schema, debug):
@@ -45,6 +44,7 @@ class EtlWrapper(object):
         self.n_queries_executed = 0
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
+        self.is_constraints_applied = False
 
     def reset_summary_stats(self):
         self.n_queries_executed = 0
@@ -53,13 +53,14 @@ class EtlWrapper(object):
 
     def execute(self):
         """Run Caliber to OMOP ETL procedure"""
+        self.is_constraints_applied = False
 
         # Create functions
         self._create_functions()
 
         # Preparing the database
         self._prepare_cdm()
-        # self._load_mappings()
+        self._load_vocabulary_mappings()
 
         # Source preparation
         self._prepare_source()
@@ -72,7 +73,7 @@ class EtlWrapper(object):
         self.print_summary_message()
 
         # Constraints and Indices
-        self._apply_constraints()  # fails in debug mode
+        self._apply_constraints()
         self._apply_indexes()
 
     def _create_functions(self):
@@ -93,7 +94,7 @@ class EtlWrapper(object):
         print("CDMv5.2 tables created")
 
         if self.debug:
-            self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - PK - NonVocabulary.sql', False)
+            _apply_constraints(self)
 
         self.execute_sql_file('./sql/cdm_prepare/alter_cdm.sql')
         self.execute_sql_file('./sql/cdm_prepare/create_id_sequence.sql')
@@ -117,40 +118,51 @@ class EtlWrapper(object):
         print(create_message('public.additional_intermediate', row_count, time.time() - t1))
 
     def _load(self):
-        # TODO: put in a logical order
         self.execute_sql_file('./sql/loading/location.sql', True)
         self.execute_sql_file('./sql/loading/care_site.sql', True)
         self.execute_sql_file('./sql/loading/provider.sql', True)
+
         self.execute_sql_file('./sql/loading/person.sql', True)
+        self.execute_sql_file('./sql/loading/death.sql', True)
         self.execute_sql_file('./sql/loading/observation_period.sql', True)
+
         self.execute_sql_file('./sql/loading/visit_occurrence.sql', True)
+
         self.execute_sql_file('./sql/loading/medcode_to_condition_occurrence.sql', True)
+        self.execute_sql_file('./sql/loading/hes_diagnoses_to_condition_occurrence.sql', True)
+
         self.execute_sql_file('./sql/loading/medcode_to_procedure_occurrence.sql', True)
-        self.execute_sql_file('./sql/loading/medcode_to_drug_exposure.sql', True)
-        self.execute_sql_file('./sql/loading/medcode_to_measurement.sql', True)
-        self.execute_sql_file('./sql/loading/medcode_to_observation.sql', True)
-        self.execute_sql_file('./sql/loading/medcode_to_device_exposure.sql', True)
-        self.execute_sql_file('./sql/loading/test_to_measurement.sql', True)
-        self.execute_sql_file('./sql/loading/test_to_observation.sql', True)
-        self.execute_sql_file('./sql/loading/therapy_to_drug_exposure.sql', True)
-        self.execute_sql_file('./sql/loading/therapy_to_device_exposure.sql', True)
-        self.execute_sql_file('./sql/loading/additional_to_measurement.sql', True)
-        self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/hes_proc_epi_to_procedure.sql', True)
         self.execute_sql_file('./sql/loading/hes_op_clinical_proc_to_procedure_occurrence.sql', True)
-        self.execute_sql_file('./sql/loading/death.sql', True)
-        self.execute_sql_file('./sql/loading/hes_diagnoses_to_condition_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/hes_diagnoses_to_procedure_occurrence.sql', True)
-        self.execute_sql_file('./sql/loading/hes_diagnoses_to_observation.sql', True)
+
+        self.execute_sql_file('./sql/loading/medcode_to_drug_exposure.sql', True)
+        self.execute_sql_file('./sql/loading/therapy_to_drug_exposure.sql', True)
+
+        self.execute_sql_file('./sql/loading/medcode_to_device_exposure.sql', True)
+        self.execute_sql_file('./sql/loading/therapy_to_device_exposure.sql', True)
+
+        self.execute_sql_file('./sql/loading/medcode_to_measurement.sql', True)
+        self.execute_sql_file('./sql/loading/test_to_measurement.sql', True)
+        self.execute_sql_file('./sql/loading/additional_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/hes_diagnoses_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/ons_imd_to_measurement.sql', True)
         self.execute_sql_file('./sql/loading/patient_famnum_to_measurement.sql', True)
+
+        self.execute_sql_file('./sql/loading/medcode_to_observation.sql', True)
+        self.execute_sql_file('./sql/loading/test_to_observation.sql', True)
+        self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
+        self.execute_sql_file('./sql/loading/hes_diagnoses_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/patient_marital_to_observation.sql', True)
 
     def _apply_constraints(self):
+        if self.is_constraints_applied:
+            return
+
         print("Applying constraints...")
         self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - PK - NonVocabulary.sql', False)
         self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - FK - NonVocabulary.sql', False)
+        self.is_constraints_applied = True
 
     def _apply_indexes(self):
         print("Applying indexes...")
