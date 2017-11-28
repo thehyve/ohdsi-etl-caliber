@@ -143,6 +143,9 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/hes_diagnoses_to_procedure_occurrence.sql', True)
         self.execute_sql_file('./sql/loading/hes_diagnoses_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/hes_diagnoses_to_measurement.sql', True)
+        self.execute_sql_file('./sql/loading/ons_imd_to_measurement.sql', True)
+        self.execute_sql_file('./sql/loading/patient_famnum_to_measurement.sql', True)
+        self.execute_sql_file('./sql/loading/patient_marital_to_observation.sql', True)
 
     def _apply_constraints(self):
         print("Applying constraints...")
