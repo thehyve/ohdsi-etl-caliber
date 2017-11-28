@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import text
 
+N_DATA_COLUMNS = 7
 
 def sql_string_param(s):
     if s is None:
@@ -62,9 +63,6 @@ def process_row(row):
     Contains all logic to split a row with data values in wide to long format.
     Also filters data values without information.
     """
-    # TODO: create unit tests
-
-    N_DATA_COLUMNS = 7
     patid = row[0]
     enttype = row[1]
     adid = row[2]
@@ -75,74 +73,105 @@ def process_row(row):
 
     # Special case for score
     if enttype == 372:
-        # Concatenate enttype-data2-data3
-        enttype_string = '-'.join([str(enttype), data_values[2], data_values[1]])
+        try:
+            value = create_score_value(patid, adid, enttype, data_values, data_names)
+            yield value
+        except Exception as error:
+            print(error.message, end='. ')
+            print("The value is skipped")
 
-        data_numeric = data_values[0]
-        data_name = data_names[0]
-        sql_value = sql_create_values_string(
-            sql_numeric_param(patid),
-            sql_numeric_param(adid),
-            sql_string_param(enttype_string),
-            sql_string_param(data_name),
-            sql_numeric_param(data_numeric),
-            sql_numeric_param(None),
-            sql_date_param(None),
-            sql_string_param(None),
-            sql_string_param(None)
-        )
-        yield sql_value
         raise StopIteration
 
     for i in range(N_DATA_COLUMNS):
-        data_value = data_values[i]
-        data_name = data_names[i]
-        data_lookup = data_lookups[i]
-
-        # Empty data value, skip
-        if data_value is None:
-            continue
-
-        # data field is a lookup and value translates to 'Data not entered'
-        if data_lookup is not None and data_value == '0':
-            continue
-
-        # Skip units data
-        if data_lookup == 'SUM':
-            continue
-
-        # Dependig on lookup, the data value can be numeric, a code or a date
-        data_date = None
-        data_code = None
-        data_numeric = None
-        if data_lookup is None:
-            data_numeric = data_value
-        elif data_lookup == 'dd/mm/yyyy':
-            data_date = datetime.strptime(data_value, '%d/%m/%Y')
-        else:
-            # All other values with a lookup
-            data_code = data_value
-
         # If next column is a unit, add that to this value. Unit is skipped in next iteration
-        # Exclude unit lookup code '0'
         unit_code = None
-        if i+1 < N_DATA_COLUMNS and data_lookups[i+1] == 'SUM' and str(data_values[i+1]) != '0':
+        if i+1 < N_DATA_COLUMNS and data_lookups[i+1] == 'SUM':
             unit_code = data_values[i+1]
 
-        enttype_string = str(enttype) + '-' + str(i + 1)
+        try:
+            value = create_value(
+                patid,
+                adid,
+                str(enttype) + '-' + str(i + 1),
+                data_values[i],
+                data_names[i],
+                data_lookups[i],
+                unit_code
+            )
+        except Exception as error:
+            # TODO: capture this message also in the log file
+            print(error.message, end='. ')
+            print("The value is skipped")
+            continue
 
-        sql_value = sql_create_values_string(
-            sql_numeric_param(patid),
-            sql_numeric_param(adid),
-            sql_string_param(enttype_string),
-            sql_string_param(data_name),
-            sql_numeric_param(data_numeric),
-            sql_string_param(data_code),
-            sql_date_param(data_date),
-            sql_string_param(data_lookup),
-            sql_string_param(unit_code)
-        )
-        yield sql_value
+        if value:
+            yield value
+
+
+def create_score_value(patid, adid, enttype, data_values, data_names):
+    # Nones to '0'
+    scoring_method = str(data_values[2] or '0')
+    condition = str(data_values[1] or '0')
+
+    # Concatenate enttype-data2-data3
+    enttype_string = '-'.join([str(enttype), scoring_method, condition])
+
+    data_numeric = data_values[0]
+    data_name = data_names[0]
+
+    return sql_create_values_string(
+        sql_numeric_param(patid),
+        sql_numeric_param(adid),
+        sql_string_param(enttype_string),
+        sql_string_param(data_name),
+        sql_numeric_param(data_numeric),
+        sql_numeric_param(None),
+        sql_date_param(None),
+        sql_string_param(None),
+        sql_string_param(None)
+    )
+
+
+def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup, unit_code):
+    # Empty data value, skip
+    if data_value is None:
+        return
+
+    # data field is a lookup and value translates to 'Data not entered'
+    if data_lookup is not None and data_value == '0':
+        return
+
+    # Skip unit data
+    if data_lookup == 'SUM':
+        return
+
+    # Depending on lookup, the data value can be numeric, a code or a date
+    data_date = None
+    data_code = None
+    data_numeric = None
+    if data_lookup is None:
+        data_numeric = data_value
+    elif data_lookup == 'dd/mm/yyyy':
+        data_date = datetime.strptime(data_value, '%d/%m/%Y')
+    else:
+        # All other values with a lookup
+        data_code = data_value
+
+    # Exclude unit lookup code '0'
+    if unit_code == '0':
+        unit_code = None
+
+    return sql_create_values_string(
+        sql_numeric_param(patid),
+        sql_numeric_param(adid),
+        sql_string_param(enttype_string),
+        sql_string_param(data_name),
+        sql_numeric_param(data_numeric),
+        sql_string_param(data_code),
+        sql_date_param(data_date),
+        sql_string_param(data_lookup),
+        sql_string_param(unit_code)
+    )
 
 
 def process_additional(connection, target_table='additional_intermediate', source_schema='caliber', target_schema='public'):
