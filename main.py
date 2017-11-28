@@ -1,4 +1,5 @@
 import sys
+import time
 from python.EtlWrapper import EtlWrapper
 from sqlalchemy import create_engine
 import click
@@ -15,20 +16,26 @@ import click
               help='User password')
 @click.option('--port', '-p', default='6000', metavar='<port>',
               help='Database server port ')
-@click.option('--source_schema', '-s', default='caliber', metavar='<schema_name>',
+@click.option('--source', '-s', default='caliber', metavar='<schema_name>',
               help='Source schema containing with CALIBER tables')
-@click.option('--target_schema', '-t', default='cdm5', metavar='<schema_name>',
-              help='Target schema where OMOP CDM tables are created')
+@click.option('--target', '-t', default='cdm5', metavar='<schema_name>',
+              help='**DEPRECATED** Target schema where OMOP CDM tables are created')
 @click.option('--debug', default=False, metavar='<debug_mode>', is_flag=True,
-              help='In debug mode, the PK constraints are applied before loading')
-def main(database, username, password, hostname, port, source_schema, target_schema, debug):
+              help='In debug mode, the table constraints are applied before loading')
+@click.option('--logger', '-l', default='', metavar='<file_name>',
+              help='Filename of the file where the log will be written')
+def main(database, username, password, hostname, port, source, target, debug, logger):
     """Execute the ETL procedure
     Dependencies: sqlalchemy and click
     """
+    if not logger:
+        logger = "log_%s.txt" % time.strftime('%Y-%m-%dT%H%M%S')
+
     # Connect to database
     eng = create_engine('postgresql://%s:%s@%s:%s/%s' % (username, password, hostname, port, database))
-    with eng.connect() as connection:
-        etl = EtlWrapper(connection, source_schema, target_schema, debug)
+    with eng.connect() as connection, open(logger, 'w') as f_log:
+        etl = EtlWrapper(connection, source, target, debug)
+        etl.set_log_file(f_log)
         etl.execute()
 
 if __name__ == "__main__":

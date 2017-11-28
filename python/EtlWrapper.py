@@ -18,15 +18,43 @@ class EtlWrapper(object):
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
         self.is_constraints_applied = False
+        self.log_file = None
+        self.t1 = None
+
+    def set_log_file(self, f):
+        self.log_file = f
 
     def reset_summary_stats(self):
         self.n_queries_executed = 0
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
 
+    def log(self, message='', end = '\n'):
+        """Write to standard output and the log file (if set)"""
+        print(message, end = end, flush = True)
+        if self.log_file:
+            self.log_file.write(message)
+            self.log_file.write(end)
+            self.log_file.flush()
+
+    def print_run_time(self):
+        """Prints timestamp and starts timer on first call. Prints total execution time on subsequent calls"""
+        self.log(time.strftime('\n%a %Y-%m-%d %H:%M:%S'))
+        if not self.t1:
+            self.log('=== ETL started ===')
+            self.t1 = time.time()
+        else:
+            self.log('Total run time: {:>20.1f} seconds'.format(time.time() - self.t1))
+
+    def print_summary_message(self):
+        self.log()
+        self.log("Queries successfully executed: %d" % self.n_queries_executed)
+        self.log("Queries failed: %d" % self.n_queries_failed)
+        self.log("Rows inserted: {:,}".format(self.total_rows_inserted))
+
     def execute(self):
         """Run Caliber to OMOP ETL procedure"""
-        self.is_constraints_applied = False
+        self.print_run_time()
 
         # Create functions
         self._create_functions()
@@ -40,6 +68,8 @@ class EtlWrapper(object):
         self.print_summary_message()
         self.reset_summary_stats()
 
+        self.print_run_time()
+
         # Loading
         self._load()
 
@@ -49,6 +79,8 @@ class EtlWrapper(object):
         self._apply_constraints()
         self._apply_indexes()
 
+        self.print_run_time()
+
     def _create_functions(self):
         self.execute_sql_file('./sql/functions/createEndDate.sql')
         self.execute_sql_file('./sql/functions/createVisitId.sql')
@@ -56,28 +88,30 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/functions/mapCprdLookup.sql')
         self.execute_sql_file('./sql/functions/mapIcdCode.sql')
         # TODO: execute unit tests?
-        print("Sql functions created or replaced")
+        self.log("Sql functions created or replaced")
 
     def _prepare_cdm(self):
         """ Prepare OMOP CDM """
         self.execute_sql_file('./sql/cdm_prepare/drop_cdm_tables.sql')
-        print("CDM tables dropped")
+        self.log("CDM tables dropped")
 
         self.execute_sql_file('./sql/cdm_prepare/OMOP CDM ddl - NonVocabulary.sql')
-        print("CDMv5.2 tables created")
-
-        if self.debug:
-            _apply_constraints(self)
+        self.is_constraints_applied = False
+        self.log("CDMv5.2 tables created")
 
         self.execute_sql_file('./sql/cdm_prepare/alter_cdm.sql')
         self.execute_sql_file('./sql/cdm_prepare/create_id_sequence.sql')
-        print("CDMv5.2 tables altered and id auto increment created")
+        self.log("CDMv5.2 tables altered and id auto increment created")
+
+        if self.debug:
+            self._apply_constraints()
 
     def _load_vocabulary_mappings(self):
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
         self.execute_sql_file('./resources/CPRD_Lookups.sql')
 
     def _prepare_source(self):
+        self.log("\nIntermediate tables and aggregates...")
         self.execute_sql_file('./sql/source_preprocessing/medcode_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/hes_diagnoses_intermediate.sql', True)
@@ -85,12 +119,13 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
 
         t1 = time.time()
-        print_current_file_message('additional_intermediate')
+        self.log(create_current_file_message('additional_intermediate'), end='')
         row_count = process_additional(self.connection, target_table='additional_intermediate', target_schema='public')
         self.total_rows_inserted += row_count
-        print(create_message('public.additional_intermediate', row_count, time.time() - t1))
+        self.log(create_message('public.additional_intermediate', row_count, time.time() - t1))
 
     def _load(self):
+        self.log("\nMain loading queries...")
         self.execute_sql_file('./sql/loading/location.sql', True)
         self.execute_sql_file('./sql/loading/care_site.sql', True)
         self.execute_sql_file('./sql/loading/provider.sql', True)
@@ -132,21 +167,14 @@ class EtlWrapper(object):
         if self.is_constraints_applied:
             return
 
-        print("Applying constraints...")
+        self.log("Applying constraints...")
         self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - PK - NonVocabulary.sql', False)
         self.execute_sql_file('./sql/cdm_prepare/OMOP CDM constraints - FK - NonVocabulary.sql', False)
         self.is_constraints_applied = True
 
     def _apply_indexes(self):
-        print("Applying indexes...")
+        self.log("Applying indexes...")
         self.execute_sql_file('./sql/cdm_prepare/OMOP CDM indexes required - NonVocabulary.sql', False)
-
-    def print_summary_message(self):
-        print()
-        print("Queries successfully executed: %d" % self.n_queries_executed)
-        print("Queries failed: %d" % self.n_queries_failed)
-        print("Rows inserted: {:,}".format(self.total_rows_inserted))
-        print()
 
     def execute_sql_file(self, filename, verbose=False):
         # Open and read the file as a single buffer
@@ -157,7 +185,7 @@ class EtlWrapper(object):
         # Execute all sql commands in the file (commands are ; separated)
         # Note: returns result for last command?
         if verbose:
-            print_current_file_message(filename)
+            self.log(create_current_file_message(filename), end='')
 
         try:
             t1 = time.time()
@@ -166,16 +194,16 @@ class EtlWrapper(object):
         except Exception as msg:
             error = msg.args[0].split('\n')[0]
             if verbose:
-                print("###") #newline before error
-            print("Query in '%s' failed:" % filename)
-            print("\t", error)
+                self.log("###")  # newline before error
+            self.log("Query in '%s' failed:" % filename)
+            self.log("\t%s" % error)
             # TODO: create log of this error
             self.n_queries_failed += 1
             return
 
         if verbose:
             message = create_insert_message(query, result.rowcount, time_delta)
-            print(message)
+            self.log(message)
 
         # Note: only tracks row count correctly if 1 insert per file and no update/delete scripts
         if result.rowcount > 0:
