@@ -10,11 +10,13 @@ INSERT INTO cdm5.provider (
     staff.staffid                                       AS provider_id,
 
     CASE staff.gender
+    WHEN 0 -- Data not entered
+      THEN NULL
     WHEN 1
       THEN 8507 -- MALE
     WHEN 2
       THEN 8532 -- FEMALE
-    ELSE 0 -- Data not entered | Indeterminate | Unknown
+    ELSE 0 -- Indeterminate | Unknown
     END                                                 AS gender_concept_id,
 
     staff.gender                                        AS gender_source_value,
@@ -28,7 +30,7 @@ INSERT INTO cdm5.provider (
       ON staff.role = (specialty_map.source_code :: INT)
          AND specialty_map.source_vocabulary_id = 'JNJ_CPRD_PROV_SPEC'
 
-  UNION ALL -- Used "ALL" to ensure a constraint violation will occur in case of duplicates
+  UNION -- ensure a constraint violation will occur in case of duplicates
 
   SELECT DISTINCT ON (hoc.tretspef)
 
@@ -39,7 +41,7 @@ INSERT INTO cdm5.provider (
     END
                                           AS provider_id,
 
-    0                                     AS gender_concept_id,
+    NULL                                  AS gender_concept_id,
     NULL                                  AS gender_source_value,
     coalesce(target_concept_id, 38004514) AS specialty_concept_id,
     tretspef                              AS specialty_source_value
