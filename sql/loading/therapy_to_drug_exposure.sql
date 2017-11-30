@@ -69,7 +69,7 @@ SELECT
     ELSE NULL
   END AS visit_occurrence_id
 
-FROM caliber.therapy AS therapy
+FROM @source_schema.therapy AS therapy
 	LEFT JOIN cdm5.source_to_concept_map AS product_map
 		ON therapy.prodcode = CAST(product_map.source_code AS INT)
 	  AND product_map.source_vocabulary_id = 'CPRD_PRODUCT'

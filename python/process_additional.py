@@ -52,7 +52,7 @@ def get_additional(connection, schema):
          "entity.data4,entity.data5,entity.data6,entity.data7,"
          "entity.data1_lkup,entity.data2_lkup,entity.data3_lkup,"
          "entity.data4_lkup,entity.data5_lkup,entity.data6_lkup,entity.data7_lkup\n"
-         "FROM caliber_real.additional AS additional\n" 
+         "FROM {0}.additional AS additional\n" 
          "JOIN {0}.entity USING (enttype)"
          ).format(schema)
     )
@@ -77,7 +77,7 @@ def process_row(row):
             value = create_score_value(patid, adid, enttype, data_values, data_names)
             yield value
         except Exception as error:
-            print(error.message, end='. ')
+            print(error, end='. ')
             print("The value is skipped")
 
         raise StopIteration
@@ -100,7 +100,7 @@ def process_row(row):
             )
         except Exception as error:
             # TODO: capture this message also in the log file
-            print(error.message, end='. ')
+            print(error, end='. ')
             print("The value is skipped")
             continue
 
@@ -174,7 +174,7 @@ def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup
     )
 
 
-def process_additional(connection, target_table='additional_intermediate', source_schema='caliber', target_schema='public'):
+def process_additional(connection, source_schema, target_schema, target_table='additional_intermediate'):
     """
     Takes additional table and generates rows per data field.
     Yields AdditionalIntermediate ORM objects

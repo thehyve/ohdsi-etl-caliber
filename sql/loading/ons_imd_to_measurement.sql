@@ -32,10 +32,10 @@ INSERT INTO cdm5.measurement
     ons_imd.imd AS value_as_number,
 
     -- Ranges of this dataset
-    (SELECT min(ons_imd.imd) FROM caliber.ons_imd) AS range_low,
+    (SELECT min(ons_imd.imd) FROM @source_schema.ons_imd) AS range_low,
 
-    (SELECT max(ons_imd.imd) FROM caliber.ons_imd) AS range_high
+    (SELECT max(ons_imd.imd) FROM @source_schema.ons_imd) AS range_high
 
-  FROM caliber.ons_imd
-    JOIN caliber.patient AS patient USING (patid)
+  FROM @source_schema.ons_imd
+    JOIN @source_schema.patient AS patient USING (patid)
 ;

@@ -28,4 +28,4 @@ INSERT INTO cdm5.location
 
     practice.region AS location_source_value
 
-  FROM caliber.practice AS practice;
+  FROM @source_schema.practice AS practice;

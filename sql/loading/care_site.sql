@@ -9,4 +9,4 @@ INSERT INTO cdm5.care_site
     practice.pracid AS care_site_source_value,
     practice.region AS location_id
 
-  FROM caliber.practice;
+  FROM @source_schema.practice;

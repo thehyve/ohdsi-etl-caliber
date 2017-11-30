@@ -1,4 +1,6 @@
+import os
 import time
+from sqlalchemy import text
 from python.process_additional import process_additional
 from python.wrapper_util import *
 
@@ -20,6 +22,7 @@ class EtlWrapper(object):
         self.is_constraints_applied = False
         self.log_file = None
         self.t1 = None
+        self.cwd = os.getcwd()
 
     def set_log_file(self, f):
         self.log_file = f
@@ -29,9 +32,9 @@ class EtlWrapper(object):
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
 
-    def log(self, message='', end = '\n'):
+    def log(self, message='', end='\n'):
         """Write to standard output and the log file (if set)"""
-        print(message, end = end, flush = True)
+        print(message, end=end, flush=True)
         if self.log_file:
             self.log_file.write(message)
             self.log_file.write(end)
@@ -61,7 +64,7 @@ class EtlWrapper(object):
 
         # Preparing the database
         self._prepare_cdm()
-        # self._load_vocabulary_mappings()
+        self._load_vocabulary_mappings()
 
         # Source preparation
         self._prepare_source()
@@ -117,12 +120,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/source_preprocessing/hes_diagnoses_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
-
-        t1 = time.time()
-        self.log(create_current_file_message('additional_intermediate'), end='')
-        row_count = process_additional(self.connection, target_table='additional_intermediate', target_schema='public')
-        self.total_rows_inserted += row_count
-        self.log(create_message('public.additional_intermediate', row_count, time.time() - t1))
+        self.execute_process_additional()
 
     def _load(self):
         self.log("\nMain loading queries...")
@@ -187,9 +185,13 @@ class EtlWrapper(object):
         if verbose:
             self.log(create_current_file_message(filename), end='')
 
+        query = query.replace('@absPath', self.cwd)
+        query = query.replace("@source_schema", self.source_schema)
+
         try:
             t1 = time.time()
-            result = self.connection.execute(query)
+            statement = text(query)
+            result = self.connection.execute(statement)
             time_delta = time.time() - t1
         except Exception as msg:
             error = msg.args[0].split('\n')[0]
@@ -210,3 +212,10 @@ class EtlWrapper(object):
             self.total_rows_inserted += result.rowcount
 
         self.n_queries_executed += 1
+
+    def execute_process_additional(self):
+        t1 = time.time()
+        self.log(create_current_file_message('additional_intermediate'), end='')
+        row_count = process_additional(self.connection, source_schema=self.source_schema, target_schema='public')
+        self.total_rows_inserted += row_count
+        self.log(create_message('public.additional_intermediate', row_count, time.time() - t1))

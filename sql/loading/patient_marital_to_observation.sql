@@ -49,7 +49,7 @@ INSERT INTO cdm5.observation
     -- Patient reported value
     44818704 AS observation_type_concept_id
 
-  FROM caliber.patient AS patient
+  FROM @source_schema.patient AS patient
   -- Exclude 'Data Not Entered'
   WHERE patient.marital != 0
 ;

@@ -62,8 +62,8 @@ INSERT INTO cdm5.observation
 
     additional.unit_code AS unit_source_value
 
-  FROM public.additional_intermediate as additional
-  JOIN caliber_real.clinical AS clinical USING(adid, patid)
+  FROM public.additional_intermediate AS additional
+  JOIN @source_schema.clinical AS clinical USING(adid, patid)
   LEFT JOIN cdm5.source_to_concept_map AS enttype_map
       ON enttype_map.source_code = additional.enttype_string AND
          enttype_map.source_vocabulary_id IN ('JNJ_CPRD_ET_LOINC','JNJ_CPRD_SCORE_LOINC')
@@ -75,10 +75,10 @@ INSERT INTO cdm5.observation
   LEFT JOIN cdm5.source_to_concept_map AS unit_map
       ON unit_map.source_code = additional.unit_code AND
          unit_map.source_vocabulary_id = 'CPRD_UNIT'
-  LEFT JOIN caliber.product AS product
+  LEFT JOIN @source_schema.product AS product
       ON additional.lookup_type = 'Product Dictionary' AND
          additional.data_code = product.prodcode :: TEXT
-  LEFT JOIN caliber.medical AS medical
+  LEFT JOIN @source_schema.medical AS medical
       ON additional.lookup_type = 'Medical Dictionary' AND
          additional.data_code = medical.medcode :: TEXT
   WHERE clinical.eventdate IS NOT NULL AND

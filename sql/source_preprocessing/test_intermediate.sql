@@ -38,8 +38,8 @@ FROM (
          NULL                  AS operator_opr,
          NULL                  AS unit_sum,
          NULL                  AS alternative_source_value
-       FROM caliber_real.test AS test
-         JOIN caliber.entity USING (enttype)
+       FROM @source_schema.test AS test
+         JOIN @source_schema.entity USING (enttype)
        WHERE data_fields = 4 AND test.data1 != '0'
 
        UNION ALL
@@ -57,8 +57,8 @@ FROM (
          test.data1            AS operator_opr,
          test.data3            AS unit_sum,
          NULL                  AS alternative_source_value
-       FROM caliber_real.test AS test
-         JOIN caliber.entity USING (enttype)
+       FROM @source_schema.test AS test
+         JOIN @source_schema.entity USING (enttype)
        WHERE data_fields > 4 AND test.data2 IS NOT NULL
 
        UNION ALL
@@ -76,8 +76,8 @@ FROM (
          NULL       AS operator_opr,
          NULL       AS unit_sum,
          test.data7 AS alternative_source_value
-       FROM caliber_real.test AS test
-         JOIN caliber.entity USING (enttype)
+       FROM @source_schema.test AS test
+         JOIN @source_schema.entity USING (enttype)
        WHERE enttype IN (311) AND test.data7 IS NOT NULL AND test.data7 != '0'
 
        UNION ALL
@@ -95,8 +95,8 @@ FROM (
          NULL       AS operator_opr,
          NULL       AS unit_sum,
          test.data8 AS alternative_source_value
-       FROM caliber_real.test AS test
-         JOIN caliber.entity USING (enttype)
+       FROM @source_schema.test AS test
+         JOIN @source_schema.entity USING (enttype)
        WHERE enttype IN (154, 284) AND data_fields = 8 AND test.data8 IS NOT NULL
 
      ) AS test_intermediate

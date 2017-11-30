@@ -36,8 +36,8 @@ INSERT INTO cdm5.visit_occurrence
     -- Visit derived from EHR record
     44818518                                                  AS visit_type_concept_id
 
-  FROM caliber.consultation AS consultation
-    JOIN caliber.patient AS patient
+  FROM @source_schema.consultation AS consultation
+    JOIN @source_schema.patient AS patient
       ON consultation.patid = patient.patid
   WHERE consultation.eventdate IS NOT NULL
 
@@ -65,8 +65,8 @@ INSERT INTO cdm5.visit_occurrence
     -- Visit derived from EHR record
     44818518                                                   AS visit_type_concept_id
 
-  FROM caliber.hes_diag_hosp AS hes_diag_hosp
-    JOIN caliber.patient AS patient
+  FROM @source_schema.hes_diag_hosp AS hes_diag_hosp
+    JOIN @source_schema.patient AS patient
       ON hes_diag_hosp.patid = patient.patid
   WHERE hes_diag_hosp.admidate IS NOT NULL
 
@@ -94,8 +94,8 @@ INSERT INTO cdm5.visit_occurrence
     -- Visit derived from EHR record
     44818518                                                   AS visit_type_concept_id
 
-  FROM caliber.hes_op_appt AS hes_op_appt
-    JOIN caliber.patient AS patient
+  FROM @source_schema.hes_op_appt AS hes_op_appt
+    JOIN @source_schema.patient AS patient
       ON hes_op_appt.patid = patient.patid
   WHERE hes_op_appt.apptdate IS NOT NULL
 ;

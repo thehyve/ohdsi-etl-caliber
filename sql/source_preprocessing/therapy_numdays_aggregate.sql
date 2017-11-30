@@ -8,7 +8,7 @@ WITH occurrence AS (
       prodcode,
       numdays,
       count(*) AS frequency
-    FROM caliber.therapy
+    FROM @source_schema.therapy
     WHERE numdays > 0 AND numdays < 365
     GROUP BY prodcode, numdays
 ), max_occurrence AS (
@@ -50,7 +50,7 @@ WITH occurrence AS (
       numpacks,
       numdays,
       count(*) AS frequency
-    FROM caliber.therapy
+    FROM @source_schema.therapy
     WHERE numdays > 0 AND numdays < 365
     GROUP BY prodcode, ndd, qty, numpacks, numdays
     HAVING count(*) > 1

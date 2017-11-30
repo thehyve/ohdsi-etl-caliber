@@ -38,9 +38,9 @@ INSERT INTO cdm5.procedure_occurrence
 
     NULLIF(NULLIF(hes_op_clinical.tretspef, '&'), '&amp;') :: INTEGER AS provider_id
 
-  FROM caliber.hes_op_clinical_proc AS hes_op_clinical_proc
-    JOIN caliber.hes_op_clinical AS hes_op_clinical USING (patid, attendkey)
-    JOIN caliber.hes_op_appt AS hes_op_appt USING (patid, attendkey)
+  FROM @source_schema.hes_op_clinical_proc AS hes_op_clinical_proc
+    JOIN @source_schema.hes_op_clinical AS hes_op_clinical USING (patid, attendkey)
+    JOIN @source_schema.hes_op_appt AS hes_op_appt USING (patid, attendkey)
     LEFT JOIN cdm5.concept AS target_concept
       ON hes_op_clinical_proc.opcs = replace(concept_code, '.', '')
          AND vocabulary_id = 'OPCS4'

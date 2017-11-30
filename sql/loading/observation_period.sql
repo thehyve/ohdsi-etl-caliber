@@ -18,11 +18,11 @@ INSERT INTO cdm5.observation_period
     -- Period inferred by algorithm
     44814725                                        AS period_type_concept_id
 
-  FROM caliber.patient pat
-    LEFT JOIN caliber.practice prac
+  FROM @source_schema.patient AS pat
+    LEFT JOIN @source_schema.practice AS prac
       ON pat.pracid = prac.pracid
-    LEFT JOIN caliber.ons_death od
+    LEFT JOIN @source_schema.ons_death AS od
       ON pat.patid = od.patid
-    LEFT JOIN caliber.obs_period_validity obs_validity
+    LEFT JOIN public.obs_period_validity AS obs_validity
       ON pat.patid = obs_validity.patid
   WHERE obs_validity.valid_obs_period IS NOT FALSE;

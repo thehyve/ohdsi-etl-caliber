@@ -38,7 +38,7 @@ INSERT INTO cdm5.procedure_occurrence
     -- TODO? According to the documentation, get this from pconsult field in the hes_episodes table (which is not present in dev environment)
     NULL AS provider_id
 
-  FROM caliber.hes_proc_epi as hes_proc_epi
+  FROM @source_schema.hes_proc_epi as hes_proc_epi
     LEFT JOIN cdm5.concept AS target_concept
       ON hes_proc_epi.opcs = replace(concept_code, '.', '')
          AND vocabulary_id = 'OPCS4'

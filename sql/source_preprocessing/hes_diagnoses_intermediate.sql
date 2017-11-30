@@ -34,9 +34,9 @@ WITH hes_diagnoses(
 
     'outpatient' AS provenance
 
-  FROM caliber.hes_op_clinical_diag AS hes_op_clinical_diag
-    JOIN caliber.hes_op_clinical AS hes_op_clinical USING (patid, attendkey)
-    JOIN caliber.hes_op_appt AS hes_op_appt USING (patid, attendkey)
+  FROM @source_schema.hes_op_clinical_diag AS hes_op_clinical_diag
+    JOIN @source_schema.hes_op_clinical AS hes_op_clinical USING (patid, attendkey)
+    JOIN @source_schema.hes_op_appt AS hes_op_appt USING (patid, attendkey)
 
   UNION ALL
 
@@ -59,7 +59,7 @@ WITH hes_diagnoses(
 
     'inpatient' AS provenance
 
-  FROM caliber.hes_diag_epi AS hes_diag_epi
+  FROM @source_schema.hes_diag_epi AS hes_diag_epi
 ),
 hes_diagnoses_icd_matched AS (
   -- Map ICD code to concept_id. Same subquery also used in death.sql

@@ -29,5 +29,5 @@ INSERT INTO cdm5.measurement
 
     patient.famnum AS value_as_number
 
-  FROM caliber.patient
+  FROM @source_schema.patient
 ;

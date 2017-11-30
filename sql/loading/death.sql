@@ -13,7 +13,7 @@ INSERT INTO cdm5.death
       SELECT DISTINCT ON (ons_death.patid)
         ons_death.patid,
         coalesce(icd10.concept_id, icd9cm.concept_id, mapicdcode(ons_death.cause)) AS icd_match
-      FROM caliber.ons_death ons_death
+      FROM @source_schema.ons_death ons_death
         LEFT JOIN cdm5.concept icd9cm
           ON ons_death.cause = icd9cm.concept_code AND icd9cm.vocabulary_id = 'ICD9CM'
         LEFT JOIN cdm5.concept icd10
@@ -32,10 +32,10 @@ INSERT INTO cdm5.death
     ons_death.cause                            AS cause_source_value,
     icd_concept_code.icd_match                 AS cause_source_concept_id
 
-  FROM caliber.patient AS patient
-    LEFT JOIN caliber.ons_death AS ons_death
+  FROM @source_schema.patient AS patient
+    LEFT JOIN @source_schema.ons_death AS ons_death
       ON patient.patid = ons_death.patid
-    LEFT JOIN caliber.obs_period_validity AS obs_period_validity
+    LEFT JOIN public.obs_period_validity AS obs_period_validity
       ON patient.patid = obs_period_validity.patid
     LEFT JOIN best_icd_match AS icd_concept_code
       ON patient.patid = icd_concept_code.patid

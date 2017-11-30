@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS caliber.entity;
-CREATE TABLE caliber.entity (
+DROP TABLE IF EXISTS @source_schema.entity;
+CREATE TABLE @source_schema.entity (
 	enttype 	integer NOT NULL,
 	description text NOT NULL,
 	filetype 	varchar(10) NOT NULL,
@@ -23,15 +23,15 @@ CREATE TABLE caliber.entity (
 	data8_lkup 	text
 );
 
-DROP TABLE IF EXISTS caliber.medical;
-CREATE TABLE caliber.medical (
+DROP TABLE IF EXISTS @source_schema.medical;
+CREATE TABLE @source_schema.medical (
 	medcode 	integer NOT NULL,
 	readcode 	varchar(8),
 	readterm	text
 );
 
-DROP TABLE IF EXISTS caliber.product;
-CREATE TABLE caliber.product (
+DROP TABLE IF EXISTS @source_schema.product;
+CREATE TABLE @source_schema.product (
 	prodcode 		integer NOT NULL, 
 	gemscriptcode 	varchar(8),
 	productname		text,

@@ -11,22 +11,22 @@ TODO: create indices on this table (source_table, target_domain_id, source_domai
 DROP TABLE IF EXISTS public.medcode_intermediate;
 WITH medcode_union (patid, eventdate, constype, consid, medcode, staffid, status, source_table) AS (
   SELECT patid, eventdate, constype, consid, medcode, staffid, NULL, 'clinical'
-  FROM caliber.clinical
+  FROM @source_schema.clinical
 
   UNION ALL
 
   SELECT patid, eventdate, constype, consid, medcode, staffid, NULL, 'referral'
-  FROM caliber.referral
+  FROM @source_schema.referral
 
   UNION ALL
 
   SELECT patid, eventdate, constype, consid, medcode, staffid, NULL, 'test'
-  FROM caliber.test
+  FROM @source_schema.test
 
   UNION ALL
 
   SELECT patid, eventdate, constype, consid, medcode, staffid, status, 'immunisation'
-  FROM caliber.immunisation
+  FROM @source_schema.immunisation
 )
 SELECT
   medcode_union.patid AS person_id,
@@ -63,7 +63,7 @@ SELECT
 INTO public.medcode_intermediate
 
 FROM medcode_union
-  LEFT JOIN caliber.medical AS medical
+  LEFT JOIN @source_schema.medical AS medical
     ON medcode_union.medcode = medical.medcode
   LEFT JOIN cdm5.concept AS source_concept
     ON medical.readcode = source_concept.concept_code AND

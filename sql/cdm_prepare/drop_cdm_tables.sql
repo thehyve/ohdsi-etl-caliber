@@ -3,7 +3,6 @@ Drop all, except the tables for the standard vocabulary.
 Has to be rebuild again in next step. Without constraints
 Has two goals: empty the table and remove constraints
 */
--- SET client_min_messages TO WARNING; -- turns off cascading warnings
 DROP TABLE IF EXISTS cdm5.care_site CASCADE;
 DROP TABLE IF EXISTS cdm5.cohort CASCADE;
 DROP TABLE IF EXISTS cdm5.cohort_attribute CASCADE;

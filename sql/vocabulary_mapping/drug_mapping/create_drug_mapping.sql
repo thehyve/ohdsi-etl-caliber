@@ -6,13 +6,13 @@
 DROP TABLE IF EXISTS public.temp_product_map;
 WITH prod_occurrence AS (
     SELECT prodcode, count(*)
-    FROM caliber.therapy
+    FROM @source_schema.therapy
     GROUP BY prodcode
 )
 SELECT prod_occurrence.*, product.gemscriptcode, temp_gemscript_to_dmd.dmd_code, concept.concept_id AS dmd_concept_id, concept_relationship.concept_id_2 AS standard_concept_id
 INTO public.temp_product_map
 FROM prod_occurrence
-  LEFT JOIN caliber.product ON prod_occurrence.prodcode = product.prodcode
+  LEFT JOIN @source_schema.product ON prod_occurrence.prodcode = product.prodcode
   LEFT JOIN public.temp_gemscript_to_dmd ON product.gemscriptcode = CAST(temp_gemscript_to_dmd.gemscript_code AS varchar) -- gemscript_code varchar due to 'ZZZZZZZ' code
   LEFT JOIN cdm5.concept ON (concept.vocabulary_id = 'dm+d' AND dmd_code = concept.concept_code)
   LEFT JOIN cdm5.concept_relationship ON (relationship_id = 'Maps to' AND concept.concept_id = concept_id_1)
@@ -33,6 +33,6 @@ COPY(
     NULL AS invalid_reason
   FROM
     temp_product_map
-    LEFT JOIN caliber.product USING(prodcode)
+    LEFT JOIN @source_schema.product USING(prodcode)
     LEFT JOIN cdm5.concept ON concept_id = standard_concept_id
 ) TO '/Users/Maxim/Develop/OHDSI/ohdsi-etl-caliber/resources/mapping_tables/CPRD_PRODUCT_TO_RXNORM.csv' WITH CSV HEADER;

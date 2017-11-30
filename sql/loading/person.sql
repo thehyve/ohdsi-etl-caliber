@@ -69,10 +69,10 @@ INSERT INTO cdm5.person
     0                  AS ethnicity_concept_id
 
 
-  FROM caliber.patient p
-    LEFT JOIN caliber.hes_patient hesp
+  FROM @source_schema.patient p
+    LEFT JOIN @source_schema.hes_patient hesp
       ON p.patid = hesp.patid
-    LEFT JOIN caliber.obs_period_validity obs_validity
+    LEFT JOIN public.obs_period_validity obs_validity
       ON p.patid = obs_validity.patid
   -- Do not insert patients with an accept value of 0
   WHERE p.accept = 1
