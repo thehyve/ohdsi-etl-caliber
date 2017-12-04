@@ -18,12 +18,11 @@ apt install postgresql-plpython3-<postgresql-version>
 ```
 
 ## Initialize the OMOP Common Data Model
-Download the latest v5 vocabulary from [Athena](http://athena.ohdsi.org/vocabulary/list). A account has to be created first.
+Download the latest v5 vocabulary from [Athena](http://athena.ohdsi.org/vocabulary/list). An account has to be created first.
 Keep all the default selected vocabularies.
 In addition, make sure that also the following vocabularies are selected:
 ```
  2. ICD9CM
-15. MedDRA (Only for Achilles vizualisation; EULA has to be requested first)
 17. Read
 34. ICD10
 55. OPCS4
