@@ -44,5 +44,5 @@ INSERT INTO cdm5.procedure_occurrence
          AND vocabulary_id = 'OPCS4'
          AND standard_concept = 'S'
   WHERE hes_proc_epi.opcs IS NOT NULL
-        AND hes_proc_epi.opcs NOT IN ('&', '&amp;')
+--         AND hes_proc_epi.opcs NOT IN ('&', '&amp;')
 ;

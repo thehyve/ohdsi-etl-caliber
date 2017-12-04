@@ -46,7 +46,6 @@ INSERT INTO cdm5.procedure_occurrence
          AND vocabulary_id = 'OPCS4'
          AND standard_concept = 'S'
   WHERE hes_op_clinical_proc.opcs IS NOT NULL
-        -- '-', 'X999' = No procedure carried out
-        -- '&', 'X997' = Not known
-        AND hes_op_clinical_proc.opcs NOT IN ('X997', 'X999', '-', '&', '&amp;', '0000')
+        -- A status code of 8 indicates that no operation is carried out
+        AND hes_op_clinical.operstat != '8'
 ;

@@ -75,6 +75,6 @@ FROM medcode_union
   LEFT JOIN cdm5.concept AS target_concept
     ON mapping.concept_id_2 = target_concept.concept_id AND
        target_concept.invalid_reason IS NULL
-  -- Only include rows with date, and valid medcode (0 = NULL and 14 = 'ZZZZZ00'	'_Converted code')
-  WHERE eventdate IS NOT NULL AND medcode_union.medcode > 0 AND medcode_union.medcode != 14
+  -- Only include rows with date, and valid medcode
+  WHERE eventdate IS NOT NULL AND medcode_union.medcode > 0
 ;
