@@ -18,7 +18,8 @@ The script are mainly sql queries, that are executed from Python.
   - psycopg2 `pip3 install psycopg2`
 
 ## Setup
-See [this document](setup_environment.md) describing the environment setup.
+See [this document](setup_environment.md) describing the initial setup. 
+In this setup the dependencies are installed and the target `cdm5` schema is initialized with the OMOP vocabulary tables.
 
 ## Run ETL
 ```bash
