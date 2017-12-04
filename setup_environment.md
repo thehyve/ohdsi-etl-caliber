@@ -1,6 +1,6 @@
-# Database Setup
+# Database Environment setup
 
-Assumption: postgresql runs on default host `127.0.0.1` and port `5432`
+Assumption: PostgreSQL runs on default host `127.0.0.1`, port `5432` and user `postgres`
 
 ## Database creation
 Create database with three schemas (target schema, source schema and public) and the python language extension.
@@ -88,8 +88,9 @@ git clone https://github.com/thehyve/ohdsi-etl-caliber.git
 cd ohdsi-etl-caliber
 ```
 
-Then execute:
+Then create and load lookup tables with:
 ```bash
+sudo -u postgres psql -c "ALTER DATABASE <database_name> SET search_path TO <source_schema_name>;"
 sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/ddl_lookups.sql
 sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/load_lookups.sql
 ```
