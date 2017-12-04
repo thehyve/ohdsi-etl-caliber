@@ -30,4 +30,5 @@ INSERT INTO cdm5.measurement
     patient.famnum AS value_as_number
 
   FROM @source_schema.patient
+  WHERE patient.crd IS NOT NULL
 ;

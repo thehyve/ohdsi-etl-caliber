@@ -51,5 +51,5 @@ INSERT INTO cdm5.observation
 
   FROM @source_schema.patient AS patient
   -- Exclude 'Data Not Entered'
-  WHERE patient.marital != 0
+  WHERE patient.marital != 0 AND patient.crd IS NOT NULL
 ;

@@ -22,8 +22,14 @@ WITH death AS (
 
 SELECT
   patid,
+
   obs_period_start_date,
-  coalesce(obs_period_end_date, to_date('20160308', 'yyyymmdd')) AS obs_period_end_date, -- Fallback date
+
+  -- End date with fallback on 2016-03-08 TODO: set as variable
+  coalesce(obs_period_end_date, to_date('20160308', 'yyyymmdd')) AS obs_period_end_date,
+
   obs_period_start_date < obs_period_end_date AS valid_obs_period
+
 INTO public.obs_period_validity
-FROM obs_period_dates;
+FROM obs_period_dates
+WHERE obs_period_start_date IS NOT NULL
