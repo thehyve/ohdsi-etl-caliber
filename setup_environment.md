@@ -1,13 +1,14 @@
-## 
+# Database Setup
 
 Assumption: postgresql runs on default host `127.0.0.1` and port `5432`
 
-# Postgres
-Create database with three schemas (including public) and the python extension.
+## Database creation
+Create database with three schemas (target schema, source schema and public) and the python language extension.
+Note that the OMOP target schema should be called `cdm5`.
 ```sql
-CREATE DATABASE caliber_acc;
+CREATE DATABASE <database_name>;
 CREATE SCHEMA cdm5;
-CREATE SCHEMA caliber;
+CREATE SCHEMA <source_schema_name>;
 CREATE EXTENSION plpython3u;
 ```
 
@@ -37,7 +38,7 @@ This script creates all CDM tables, loads the vocabulary and applies indices and
 ```bash
 git clone -b cdm-auto-create https://github.com/thehyve/OHDSI-CommonDataModel.git
 cd OHDSI-CommonDataModel/PostgreSQL
-sh "Initialize - PostgreSQL.sh" 127.0.0.1 5432 caliber_acc cdm5 postgres heartdatabig ~/omop_vocabulary/
+sh "Initialize - PostgreSQL.sh" 127.0.0.1 5432 <database_name> cdm5 <user> <password> ~/omop_vocabulary/
 ```
 
 _Note: this step creates both the vocabulary tables and non-vocabulary tables.
@@ -89,8 +90,8 @@ cd ohdsi-etl-caliber
 
 Then execute:
 ```bash
-sudo -u postgres psql -d caliber_acc -f sql/source_preprocessing/ddl_lookups.sql
-sudo -u postgres psql -d caliber_acc -f sql/source_preprocessing/load_lookups.sql
+sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/ddl_lookups.sql
+sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/load_lookups.sql
 ```
 
 
