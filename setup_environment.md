@@ -18,18 +18,18 @@ apt install postgresql-plpython3-<postgresql-version>
 ```
 
 ## Initialize the OMOP Common Data Model
-First, download the latest v5 vocabulary here:
-http://athena.ohdsi.org/vocabulary/list 
-
+Download the latest v5 vocabulary from [Athena](http://athena.ohdsi.org/vocabulary/list). A account has to be created first.
 Keep all the default selected vocabularies.
-In addition, make sure that the following vocabularies are selected:
-* dm+d
-* OPCS4
-* Meddra
-* Read
-* ICD10
-* ICD9CM
-
+In addition, make sure that also the following vocabularies are selected:
+```
+ 2. ICD9CM
+15. MedDRA (Only for Achilles vizualisation; EULA has to be requested first)
+17. Read
+34. ICD10
+55. OPCS4
+57. HES Specialty
+75. dm+d
+```
 Move this file to the server and unpack to `~/omop_vocabulary/`.
 
 Then, use the code blow to clone the OMOP CDM v5.2 DDL from github (`OHDSI-CommonDataModel`). 
@@ -94,7 +94,3 @@ sudo -u postgres psql -c "ALTER DATABASE <database_name> SET search_path TO <sou
 sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/ddl_lookups.sql
 sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/load_lookups.sql
 ```
-
-
-
-
