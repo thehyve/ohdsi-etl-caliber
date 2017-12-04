@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS @source_schema.entity;
-CREATE TABLE @source_schema.entity (
+DROP TABLE IF EXISTS entity;
+CREATE TABLE entity (
 	enttype 	integer NOT NULL,
 	description text NOT NULL,
 	filetype 	varchar(10) NOT NULL,
@@ -23,15 +23,15 @@ CREATE TABLE @source_schema.entity (
 	data8_lkup 	text
 );
 
-DROP TABLE IF EXISTS @source_schema.medical;
-CREATE TABLE @source_schema.medical (
+DROP TABLE IF EXISTS medical;
+CREATE TABLE medical (
 	medcode 	integer NOT NULL,
 	readcode 	varchar(8),
 	readterm	text
 );
 
-DROP TABLE IF EXISTS @source_schema.product;
-CREATE TABLE @source_schema.product (
+DROP TABLE IF EXISTS product;
+CREATE TABLE product (
 	prodcode 		integer NOT NULL, 
 	gemscriptcode 	varchar(8),
 	productname		text,
