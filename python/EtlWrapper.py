@@ -88,6 +88,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/functions/createEndDate.sql')
         self.execute_sql_file('./sql/functions/createVisitId.sql')
         self.execute_sql_file('./sql/functions/createHesApptVisitId.sql')
+        self.execute_sql_file('./sql/functions/createCareSiteId.sql')
         self.execute_sql_file('./sql/functions/mapCprdLookup.sql')
         self.execute_sql_file('./sql/functions/mapIcdCode.sql')
         # TODO: execute unit tests?

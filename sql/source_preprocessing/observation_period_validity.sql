@@ -15,7 +15,7 @@ WITH death AS (
 
     FROM @source_schema.patient AS p
       LEFT JOIN @source_schema.practice AS prac
-        ON p.pracid = prac.pracid
+        ON createCareSiteId(p.patid) = prac.pracid
       LEFT JOIN death AS death
         ON p.patid = death.patid
 )

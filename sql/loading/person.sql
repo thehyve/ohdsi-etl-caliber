@@ -15,9 +15,9 @@ INSERT INTO cdm5.person
 )
   SELECT
     DISTINCT ON (p.patid)
-    p.patid            AS person_id,
-    p.patid            AS person_source_value,
-    p.pracid           AS care_site_id,
+    p.patid                   AS person_id,
+    p.patid                   AS person_source_value,
+    createCareSiteId(p.patid) AS care_site_id,
 
     CASE p.gender
     WHEN 1

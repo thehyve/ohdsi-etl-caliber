@@ -20,7 +20,7 @@ INSERT INTO cdm5.visit_occurrence
 
     consultation.patid                                        AS person_id,
 
-    patient.pracid                                            AS care_site_id,
+    createCareSiteId(patient.patid)                           AS care_site_id,
 
     consultation.eventdate                                    AS visit_start_date,
 
@@ -48,7 +48,7 @@ INSERT INTO cdm5.visit_occurrence
 
     hes_diag_hosp.patid                                        AS person_id,
 
-    patient.pracid                                             AS care_site_id,
+    createCareSiteId(patient.patid)                            AS care_site_id,
 
     hes_diag_hosp.admidate                                     AS visit_start_date,
 
@@ -78,7 +78,7 @@ INSERT INTO cdm5.visit_occurrence
 
     hes_op_appt.patid                                          AS person_id,
 
-    patient.pracid                                             AS care_site_id,
+    createCareSiteId(patient.patid)                            AS care_site_id,
 
     hes_op_appt.apptdate                                       AS visit_start_date,
     
