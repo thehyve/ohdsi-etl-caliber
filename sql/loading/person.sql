@@ -29,12 +29,15 @@ INSERT INTO cdm5.person
 
     p.gender           AS gender_source_value,
 
-    p.yob              AS year_of_birth,
+    -- Accept two yob formats; as years after 1800 or actual year.
+    CASE WHEN p.yob < 300
+      THEN p.yob + 1800
+      ELSE p.yob
+    END                AS year_of_birth,
 
     CASE WHEN p.mob = 0
       THEN NULL
-    ELSE p.mob END
-                       AS month_of_birth,
+    ELSE p.mob END     AS month_of_birth,
 
     CASE hesp.gen_ethnicity -- Sorted by prevalence
     WHEN 'White'
@@ -76,7 +79,8 @@ INSERT INTO cdm5.person
       ON p.patid = obs_validity.patid
   -- Do not insert patients with an accept value of 0
   WHERE p.accept = 1
-        -- Exclude patients born before 1900
-        AND p.yob >= 1900
+        -- Exclude patients born before 1900 (for both yob formats)
+        AND (p.yob >= 1900 OR yob BETWEEN 100 AND 300)
         -- Exclude patients with observation end dates before observation start date
-        AND obs_validity.valid_obs_period IS NOT FALSE;
+        AND obs_validity.valid_obs_period IS NOT FALSE
+;
