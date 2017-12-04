@@ -45,12 +45,12 @@ However, this step is only essential for initialization of the **vocabulary** ta
 The non-vocabulary tables, containing the actual EHR data, will be dropped and recreated by the ETL script._
 
 ## Initialize CALIBER
-Load the CALIBER data set into the caliber schema.
+Load the CALIBER data set into the source data schema.
 
 If not included already, also include the `medical`, `product` and `entity` lookup tables in this schema.
 See the section on ETL/Lookups describes how to load them from the ETL repository.
 
-The caliber schema should contain the following tables:
+The source schema should contain the following tables:
 * hes_diag_epi
 * hes_diag_hosp
 * hes_op_clinical
