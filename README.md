@@ -23,8 +23,10 @@ In this setup the dependencies are installed and the target `cdm5` schema is ini
 
 ## Run ETL
 ```bash
-python3 main.py -h 127.0.0.1 -d <database-name> -u <user> -w <password> -p <port> -s <source-schema>
+python3 main.py -h 127.0.0.1 -d <database-name> -p <port> -u <user> -w <password>  -s <source-schema>
 ```
+
+Supply `--debug` to apply constraints before loading. This gives direct feedback if any constraints fail, but is less optimal for loading speed.
 
 A log file will be created in the current working directory.
 
