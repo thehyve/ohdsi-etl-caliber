@@ -35,11 +35,7 @@ SELECT
 
   medcode_union.eventdate :: TIMESTAMP AS _start_datetime,
 
-  CASE
-    WHEN createvisitid(medcode_union.patid, medcode_union.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-    THEN createvisitid(medcode_union.patid, medcode_union.eventdate)
-    ELSE NULL
-  END AS visit_occurrence_id,
+  createvisitid(medcode_union.patid, medcode_union.eventdate) AS visit_occurrence_id,
 
   -- Use medcode lookup to convert to read codes
   -- Join medcode onto ‘Medical’ file to get read source codes (field name ‘read_code’).   Use target_concept_id from  SOURCE to STANDARD vocab query with: Source_vocabulary_id=’Read’ Target_domain_id=’Condition’ Target_invalid_reason=NULL  For HES tables: Use target_concept_id from SOURCE to STANDARD vocab query with: Source_vocabulary_id=’ICD10’ Target_domain_id=’Condition’ Target_invalid_reason=NULL

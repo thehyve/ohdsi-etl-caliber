@@ -22,7 +22,8 @@ INSERT INTO cdm5.procedure_occurrence
 
     medcode_intermediate._start_datetime,
 
-    medcode_intermediate.visit_occurrence_id,
+    -- Null if id does not exist in visit_occurrence
+    visit_occurrence.visit_occurrence_id,
 
     medcode_intermediate.provider_id,
 
@@ -41,7 +42,8 @@ INSERT INTO cdm5.procedure_occurrence
       ELSE 0
     END AS procedure_type_concept_id
 
-  FROM medcode_intermediate AS medcode_intermediate
+  FROM public.medcode_intermediate AS medcode_intermediate
+    LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)
   -- If from immunisation table, the immunisation status has to be 'Given'
   WHERE target_domain_id = 'Procedure' AND (
     medcode_intermediate.immunisation_status = 'Given' OR

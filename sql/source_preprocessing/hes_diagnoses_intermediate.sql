@@ -19,11 +19,7 @@ WITH hes_diagnoses(
 
     hes_op_appt.apptdate AS date,
 
-    CASE
-      WHEN createHesApptVisitId(hes_op_appt.attendkey, hes_op_clinical_diag.patid) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-        THEN createHesApptVisitId(hes_op_appt.attendkey, hes_op_clinical_diag.patid)
-      ELSE NULL
-    END AS visit_occurrence_id,
+    createHesApptVisitId(hes_op_appt.attendkey, hes_op_clinical_diag.patid) AS visit_occurrence_id,
 
     -- newicd is the cleaned icd and contains a dot
     hes_op_clinical_diag.newicd AS icd_code,
@@ -45,11 +41,7 @@ WITH hes_diagnoses(
 
     hes_diag_epi.epistart AS date,
 
-    CASE
-      WHEN hes_diag_epi.spno IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-        THEN hes_diag_epi.spno
-      ELSE NULL
-    END AS visit_occurrence_id,
+    hes_diag_epi.spno AS visit_occurrence_id,
 
     hes_diag_epi.icd AS icd_code,
 

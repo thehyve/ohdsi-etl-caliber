@@ -20,7 +20,8 @@ SELECT
 
   hes_diagnoses.date :: TIMESTAMP AS observation_start_datetime,
 
-  hes_diagnoses.visit_occurrence_id AS visit_occurrence_id,
+  -- Null if id does not exist in visit_occurrence
+  visit_occurrence.visit_occurrence_id AS visit_occurrence_id,
 
   coalesce(hes_diagnoses.target_concept_id, 0) AS observation_concept_id,
 
@@ -34,6 +35,7 @@ SELECT
   hes_diagnoses.provider_id AS provider_id
 
 FROM public.hes_diagnoses_intermediate AS hes_diagnoses
+  LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)
 -- All other domains
 WHERE target_domain_id NOT IN ('Condition','Measurement','Procedure')
 ;
