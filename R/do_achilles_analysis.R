@@ -1,3 +1,15 @@
+## First-time installation instructions ##
+# There are some non-R dependencies
+# devtools dependencies:
+# - lib-openssl
+# - libcurl4-openssl
+# Achilles dependencies:
+# - java jre and jdk
+# If Achilles DatabaseConnector fails, install it separately:
+# - install_github("ohdsi/DatabaseConnector")
+# If rJava does not load, then execute Rstudio as superuser:
+# - sudo rstudio
+install.packages("devtools")
 library(devtools)
 install_github("thehyve/Achilles", ref="vocab_mapping")
 library(Achilles)
