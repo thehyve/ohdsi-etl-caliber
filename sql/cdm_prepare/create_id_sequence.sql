@@ -29,3 +29,7 @@ ALTER TABLE cdm5.procedure_occurrence ALTER COLUMN procedure_occurrence_id SET D
 DROP SEQUENCE IF EXISTS cdm5.observation_period_seq CASCADE;
 CREATE SEQUENCE cdm5.observation_period_seq;
 ALTER TABLE cdm5.observation_period ALTER COLUMN observation_period_id SET DEFAULT nextval('cdm5.observation_period_seq');
+
+DROP SEQUENCE IF EXISTS cdm5.drug_era_seq CASCADE;
+CREATE SEQUENCE cdm5.drug_era_seq;
+ALTER TABLE cdm5.drug_era ALTER COLUMN drug_era_id SET DEFAULT nextval('cdm5.drug_era_seq');

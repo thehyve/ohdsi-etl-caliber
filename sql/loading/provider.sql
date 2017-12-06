@@ -45,7 +45,7 @@ INSERT INTO cdm5.provider (
 
     coalesce(target_concept_id, 0)        AS specialty_concept_id,
 
-    provider_mapping.concept_id_2         AS specialty_source_concept_id,
+    source_concept.concept_id             AS specialty_source_concept_id,
 
     tretspef                              AS specialty_source_value
 
@@ -54,6 +54,6 @@ INSERT INTO cdm5.provider (
       ON hoc.tretspef = cms2_map.source_code
          AND cms2_map.source_vocabulary_id = 'JNJ_CPRD_PROV_CMS2'
     LEFT JOIN cdm5.concept AS source_concept
-      ON staff.role :: TEXT = source_concept.concept_code AND
-         source_concept.vocabulary_id = 'HES Specialty'
+      ON hoc.tretspef = source_concept.concept_code
+         AND source_concept.vocabulary_id = 'HES Specialty'
 ;
