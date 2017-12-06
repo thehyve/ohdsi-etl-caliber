@@ -78,6 +78,9 @@ class EtlWrapper(object):
 
         self.print_summary_message()
 
+        # Derived tables
+        self._derive_era()
+
         # Constraints and Indices
         self._apply_constraints()
         self._apply_indexes()
@@ -161,6 +164,9 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/additional_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/hes_diagnoses_to_observation.sql', True)
         self.execute_sql_file('./sql/loading/patient_marital_to_observation.sql', True)
+
+    def _derive_era(self):
+        self.execute_sql_file('./sql/drug_era_stockpile.sql', True)
 
     def _apply_constraints(self):
         if self.is_constraints_applied:
