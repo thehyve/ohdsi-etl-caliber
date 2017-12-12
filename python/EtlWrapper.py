@@ -115,7 +115,7 @@ class EtlWrapper(object):
 
     def _load_vocabulary_mappings(self):
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
-        self.execute_sql_file('./resources/CPRD_Lookups.sql')
+        self.execute_sql_file('./resources/cprd_lookups/small_lookups.sql')
 
     def _prepare_source(self):
         self.log("\nIntermediate tables and aggregates...")

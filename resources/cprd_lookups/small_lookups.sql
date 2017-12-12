@@ -1266,4 +1266,5 @@ VALUES
   ('YND', 'Smoke/drink Status', '0', 'Data Not Entered'),
   ('YND', 'Smoke/drink Status', '1', 'Yes'),
   ('YND', 'Smoke/drink Status', '2', 'No'),
-  ('YND', 'Smoke/drink Status', '3', 'Ex');
+  ('YND', 'Smoke/drink Status', '3', 'Ex')
+;
