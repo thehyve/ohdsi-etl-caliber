@@ -20,7 +20,7 @@ INSERT INTO cdm5.visit_occurrence
 
     consultation.patid                                        AS person_id,
 
-    createCareSiteId(patient.patid)                           AS care_site_id,
+    createCareSiteId(consultation.patid)                      AS care_site_id,
 
     consultation.eventdate                                    AS visit_start_date,
 
@@ -37,8 +37,6 @@ INSERT INTO cdm5.visit_occurrence
     44818518                                                  AS visit_type_concept_id
 
   FROM @source_schema.consultation AS consultation
-    JOIN @source_schema.patient AS patient
-      ON consultation.patid = patient.patid
   WHERE consultation.eventdate IS NOT NULL
 
   UNION ALL
@@ -48,7 +46,7 @@ INSERT INTO cdm5.visit_occurrence
 
     hes_diag_hosp.patid                                        AS person_id,
 
-    createCareSiteId(patient.patid)                            AS care_site_id,
+    createCareSiteId(hes_diag_hosp.patid)                      AS care_site_id,
 
     hes_diag_hosp.admidate                                     AS visit_start_date,
 
@@ -66,8 +64,6 @@ INSERT INTO cdm5.visit_occurrence
     44818518                                                   AS visit_type_concept_id
 
   FROM @source_schema.hes_diag_hosp AS hes_diag_hosp
-    JOIN @source_schema.patient AS patient
-      ON hes_diag_hosp.patid = patient.patid
   WHERE hes_diag_hosp.admidate IS NOT NULL
 
   UNION ALL
@@ -78,7 +74,7 @@ INSERT INTO cdm5.visit_occurrence
 
     hes_op_appt.patid                                          AS person_id,
 
-    createCareSiteId(patient.patid)                            AS care_site_id,
+    createCareSiteId(hes_op_appt.patid)                        AS care_site_id,
 
     hes_op_appt.apptdate                                       AS visit_start_date,
     
@@ -95,7 +91,5 @@ INSERT INTO cdm5.visit_occurrence
     44818518                                                   AS visit_type_concept_id
 
   FROM @source_schema.hes_op_appt AS hes_op_appt
-    JOIN @source_schema.patient AS patient
-      ON hes_op_appt.patid = patient.patid
   WHERE hes_op_appt.apptdate IS NOT NULL
 ;
