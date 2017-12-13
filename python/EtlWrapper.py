@@ -188,18 +188,11 @@ class EtlWrapper(object):
         f.close()
 
         # Execute all sql commands in the file (commands are ; separated)
-        # Note: returns result for last command?
+        # Note: returns result for last command
         if verbose:
             self.log(create_current_file_message(filename), end='')
-
-        query = query.replace('@absPath', self.cwd)
-        query = query.replace("@source_schema", self.source_schema)
-
         try:
-            t1 = time.time()
-            statement = text(query)
-            result = self.connection.execute(statement)
-            time_delta = time.time() - t1
+            self.execute_sql_query(query, verbose)
         except Exception as msg:
             error = msg.args[0].split('\n')[0]
             if verbose:
@@ -208,7 +201,16 @@ class EtlWrapper(object):
             self.log("\t%s" % error)
             # TODO: create log of this error
             self.n_queries_failed += 1
-            return
+
+    def execute_sql_query(self, query, verbose=False):
+        # Prepare parameterized sql
+        query = query.replace('@absPath', self.cwd)
+        query = query.replace("@source_schema", self.source_schema)
+
+        t1 = time.time()
+        statement = text(query)
+        result = self.connection.execute(statement)
+        time_delta = time.time() - t1
 
         if verbose:
             message = create_insert_message(query, result.rowcount, time_delta)
@@ -219,6 +221,7 @@ class EtlWrapper(object):
             self.total_rows_inserted += result.rowcount
 
         self.n_queries_executed += 1
+        return result
 
     def execute_process_additional(self):
         t1 = time.time()
