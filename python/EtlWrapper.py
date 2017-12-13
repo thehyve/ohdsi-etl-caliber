@@ -209,7 +209,6 @@ class EtlWrapper(object):
                 self.log("###")  # newline before error
             self.log("Query in '%s' failed:" % filename)
             self.log("\t%s" % error)
-            # TODO: create log of this error
             self.n_queries_failed += 1
 
     def execute_sql_query(self, query, verbose=False):

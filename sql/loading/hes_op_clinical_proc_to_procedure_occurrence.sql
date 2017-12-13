@@ -1,6 +1,6 @@
 /*
 OPCS procedure codes from outpatient records
-TODO: remove checks for &amp; in production (for provider_id and where clause). This is a translation error in the dev database.
+Note: the checks for &amp; can be removed in production. This is a translation error in the dev database.
 */
 INSERT INTO cdm5.procedure_occurrence
 (

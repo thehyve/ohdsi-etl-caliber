@@ -2,7 +2,6 @@
 Create intermediate test table, to determine which fields need mapping.
 Filter records with qualifier 0 ('Data not entered') for 4 data fields and without a value for 7 or 8 data fields.
 In general, if the lookup code is '0' for the qualifier, operator or unit, then leave the cell empty (NULL).
-TODO: replace schema caliber_real
  */
 DROP TABLE IF EXISTS public.test_intermediate;
 

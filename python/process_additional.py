@@ -43,7 +43,6 @@ def create_intermediate_table(connection, schema, table_name):
 
 
 def get_additional(connection, schema):
-    #TODO, replace 'caliber_real' by schema parameter
     return connection.execute(
         ("SELECT patid,enttype,adid,"
          "additional.data1,additional.data2,additional.data3,"
