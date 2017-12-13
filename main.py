@@ -4,6 +4,8 @@ from python.EtlWrapper import EtlWrapper
 from sqlalchemy import create_engine
 import click
 
+__version__ = '0.1.0-SNAPSHOT'
+
 
 @click.command()
 @click.option('--hostname', '-h', default='localhost', metavar='<host>',
@@ -35,7 +37,13 @@ def main(database, username, password, hostname, port, source, target, debug, lo
     with eng.connect() as connection, open(logger, 'w') as f_log:
         etl = EtlWrapper(connection, source, target, debug)
         etl.set_log_file(f_log)
+        etl.log("ETL version " + __version__)
         etl.execute()
 
 if __name__ == "__main__":
-    sys.exit(main())
+    if sys.version_info > (3, 0):
+        # Python 3, that's good
+        sys.exit(main())
+    else:
+        # Python 2, not supported
+        sys.exit('ERROR: Python version <2 NOT supported. Please use Python 3.x')
