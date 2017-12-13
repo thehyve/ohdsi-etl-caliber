@@ -169,7 +169,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/patient_marital_to_observation.sql', True)
 
     def _derive_era(self):
-        self.execute_sql_file('./sql/drug_era_stockpile.sql', True)
+        self.execute_sql_file('./sql/drug_era.sql', True)
 
     def _apply_constraints(self):
         if self.is_constraints_applied:
@@ -234,7 +234,7 @@ class EtlWrapper(object):
         return result
 
     def log_source_counts(self):
-        self.log('\n==== Source Counts ====')
+        self.log('{:=^30}'.format(' Source Counts ')
         self.log('#Persons')
         self.log_table_counts(['patient', 'hes_patient', 'hes_op_patient'])
 
