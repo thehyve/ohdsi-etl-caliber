@@ -233,7 +233,7 @@ class EtlWrapper(object):
         return result
 
     def log_source_counts(self):
-        self.log('{:=^30}'.format(' Source Counts ')
+        self.log('{:=^30}'.format(' Source Counts '))
         self.log('#Persons')
         self.log_table_counts(['patient', 'hes_patient', 'hes_op_patient'])
 
