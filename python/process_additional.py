@@ -1,4 +1,5 @@
 from datetime import datetime
+from multiprocessing import Pool
 from sqlalchemy import text
 
 N_DATA_COLUMNS = 7
@@ -59,6 +60,7 @@ def get_additional(connection, schema):
 
 def process_row(row):
     """
+    Outputs a sql insert values for a row from the additional table.
     Contains all logic to split a row with data values in wide to long format.
     Also filters data values without information.
     """
@@ -74,13 +76,14 @@ def process_row(row):
     if enttype == 372:
         try:
             value = create_score_value(patid, adid, enttype, data_values, data_names)
-            yield value
+            return [value]
         except Exception as error:
             print(error, end='. ')
             print("The value is skipped")
 
         raise StopIteration
 
+    sql_insert_values = []
     for i in range(N_DATA_COLUMNS):
         # If next column is a unit, add that to this value. Unit is skipped in next iteration
         unit_code = None
@@ -104,7 +107,9 @@ def process_row(row):
             continue
 
         if value:
-            yield value
+            sql_insert_values.append(value)
+
+    return sql_insert_values
 
 
 def create_score_value(patid, adid, enttype, data_values, data_names):
@@ -182,27 +187,31 @@ def process_additional(connection, source_schema, target_schema, target_table='a
     # Create the intermediate table
     create_intermediate_table(connection, target_schema, target_table)
 
-    #
+    # This is slow if ETL run remotely (data has to be send from server to local environment)
     additional_table = get_additional(connection, source_schema)
 
+    # Memory and processor usage param
     BLOCK_SIZE = 50000
+    PROCESSES = 4
     SQL_INSERT_BASE = "INSERT INTO {0}.{1} " \
                       "(patid, adid, enttype_string, datafield_name, data_value, data_code, data_date, lookup_type, unit_code) " \
                       "VALUES".format(target_schema, target_table)
 
+    # Process per block. Create values and do a batch insert.
     total_rows_inserted = 0
+    pool = Pool(processes=PROCESSES)
     while True:
-        # Load 1000 in memory
-        sql_insert_values = []
+        # Load a part of the result in memory
         rows = additional_table.fetchmany(BLOCK_SIZE)
-        for row in rows:
-            for sql_value in process_row(row):
-                sql_insert_values.append(sql_value)
-                total_rows_inserted += 1
+
+        # Perform the row processing in parallel
+        result = pool.map(process_row, rows)
+        sql_insert_values = [value for values in result for value in values]
 
         sql_insert = SQL_INSERT_BASE + ' ' + ','.join(sql_insert_values)
         insert_result = connection.execute(text(sql_insert))
-        # print('Inserted:', insert_result.rowcount)
+
+        total_rows_inserted += insert_result.rowcount
 
         # Stop condition if all rows retrieved
         if len(rows) < BLOCK_SIZE:
