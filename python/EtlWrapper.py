@@ -122,6 +122,7 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql')
 
     def _prepare_source(self):
+        self.execute_sql_file('./sql/source_preprocessing/caliber_indexes.sql', True)
         self.log("\nIntermediate tables and aggregates...")
         self.execute_sql_file('./sql/source_preprocessing/medcode_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
