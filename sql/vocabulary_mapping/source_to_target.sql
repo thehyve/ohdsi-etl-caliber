@@ -33,7 +33,7 @@ CREATE TABLE cdm5.source_to_target AS
              AND relationship_id = 'Maps to'
         JOIN cdm5.concept AS target
           ON concept_id_2 = target.concept_id
-      WHERE source.vocabulary_id IN ('Read', 'ICD10', 'ICD9CM', 'OPCS4', 'dm+d')
+      WHERE source.vocabulary_id IN ('Read', 'ICD10', 'ICD9CM', 'OPCS4', 'HES Specialty')
   ), stcm AS (
       SELECT
         source_code                                  AS source_code,
