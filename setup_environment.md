@@ -79,7 +79,7 @@ The source schema should contain the following tables:
 * auxiliary_lookups
 
 ### Lookup tables
-If the `medical`, `product`, `entity` and/or `small_lookups` lookup tables are not yet included in the caliber schema,
+If the `medical`, `product`, `entity` and/or `auxiliary_lookups` lookup tables are not yet included in the caliber schema,
  they can be created and loaded from the ETL repository.
 
 First clone from git or download source code
