@@ -11,7 +11,7 @@
 *  - Central overview of used mappings.
 * NOTE: all required source vocabulary_ids have to be inputted here (!)
 */
-DROP TABLE cdm5.source_to_target;
+DROP TABLE IF EXISTS cdm5.source_to_target;
 
 CREATE TABLE cdm5.source_to_target AS
   WITH maps_to AS (

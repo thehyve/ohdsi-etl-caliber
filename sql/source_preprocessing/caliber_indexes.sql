@@ -1,116 +1,116 @@
 -- Indexes
 CREATE INDEX idx_additional_patid
-  ON caliber.additional (patid);
+  ON @source_schema.additional (patid);
 CREATE INDEX idx_additional_enttype
-  ON caliber.additional (enttype);
+  ON @source_schema.additional (enttype);
 CREATE INDEX idx_additional_adid
-  ON caliber.additional (adid);
+  ON @source_schema.additional (adid);
 
 CREATE INDEX idx_clinical_patid
-  ON caliber.clinical (patid);
+  ON @source_schema.clinical (patid);
 CREATE INDEX idx_clinical_enttype
-  ON caliber.clinical (enttype);
+  ON @source_schema.clinical (enttype);
 CREATE INDEX idx_clinical_adid
-  ON caliber.clinical (adid);
+  ON @source_schema.clinical (adid);
 CREATE INDEX idx_clinical_medcode
-  ON caliber.clinical (medcode);
+  ON @source_schema.clinical (medcode);
 
 CREATE INDEX idx_consultation_patid
-  ON caliber.consultation (patid);
+  ON @source_schema.consultation (patid);
 CREATE INDEX idx_consultation_consid
-  ON caliber.consultation (consid);
+  ON @source_schema.consultation (consid);
 CREATE INDEX idx_consultation_eventdate
-  ON caliber.consultation (eventdate);
+  ON @source_schema.consultation (eventdate);
 
 CREATE INDEX idx_hes_diag_epi_patid
-  ON caliber.hes_diag_epi (patid);
+  ON @source_schema.hes_diag_epi (patid);
 CREATE INDEX idx_hes_diag_hosp_patid
-  ON caliber.hes_diag_hosp (patid);
+  ON @source_schema.hes_diag_hosp (patid);
 CREATE INDEX idx_hes_diag_hosp_icd
-  ON caliber.hes_diag_hosp (icd);
+  ON @source_schema.hes_diag_hosp (icd);
 
 CREATE INDEX idx_hes_op_appt_patid
-  ON caliber.hes_op_appt (patid);
+  ON @source_schema.hes_op_appt (patid);
 CREATE INDEX idx_hes_op_appt_attendkey
-  ON caliber.hes_op_appt (attendkey);
+  ON @source_schema.hes_op_appt (attendkey);
 
 CREATE INDEX idx_hes_op_clinical_patid
-  ON caliber.hes_op_clinical (patid);
+  ON @source_schema.hes_op_clinical (patid);
 CREATE INDEX idx_hes_op_clinical_attendkey
-  ON caliber.hes_op_clinical (attendkey);
+  ON @source_schema.hes_op_clinical (attendkey);
 
 CREATE INDEX idx_hes_op_clinical_diag_patid
-  ON caliber.hes_op_clinical_diag (patid);
+  ON @source_schema.hes_op_clinical_diag (patid);
 CREATE INDEX idx_hes_op_clinical_diag_attendkey
-  ON caliber.hes_op_clinical_diag (attendkey);
+  ON @source_schema.hes_op_clinical_diag (attendkey);
 CREATE INDEX idx_hes_op_clinical_diag_icd
-  ON caliber.hes_op_clinical_diag (icd);
+  ON @source_schema.hes_op_clinical_diag (icd);
 CREATE INDEX idx_hes_op_clinical_diag_newicd
-  ON caliber.hes_op_clinical_diag (newicd);
+  ON @source_schema.hes_op_clinical_diag (newicd);
 
 CREATE INDEX idx_hes_op_clinical_proc_patid
-  ON caliber.hes_op_clinical_proc (patid);
+  ON @source_schema.hes_op_clinical_proc (patid);
 CREATE INDEX idx_hes_op_clinical_proc_attendkey
-  ON caliber.hes_op_clinical_proc (attendkey);
+  ON @source_schema.hes_op_clinical_proc (attendkey);
 CREATE INDEX idx_hes_op_clinical_proc_opcs
-  ON caliber.hes_op_clinical_proc (opcs);
+  ON @source_schema.hes_op_clinical_proc (opcs);
 
 CREATE INDEX idx_hes_op_patient_patid
-  ON caliber.hes_op_patient (patid);
+  ON @source_schema.hes_op_patient (patid);
 CREATE INDEX idx_hes_patient_patid
-  ON caliber.hes_patient (patid);
+  ON @source_schema.hes_patient (patid);
 
 CREATE INDEX idx_hes_proc_epi_patid
-  ON caliber.hes_proc_epi (patid);
+  ON @source_schema.hes_proc_epi (patid);
 
 CREATE INDEX idx_immunisation_patid
-  ON caliber.immunisation (patid);
+  ON @source_schema.immunisation (patid);
 CREATE INDEX idx_immunisation_medcode
-  ON caliber.immunisation (medcode);
+  ON @source_schema.immunisation (medcode);
 
 -- TODO: rename lookup tables to lookup_***
 -- CREATE INDEX idx_lookup_ANYTHING_code
---   ON caliber.lookup_ANYTHING (code);
+--   ON @source_schema.lookup_ANYTHING (code);
 -- CREATE INDEX idx_lookup_entity_enttype
---   ON caliber.lookup_entity (enttype);
+--   ON @source_schema.lookup_entity (enttype);
 CREATE INDEX idx_lookup_linkage_eligibility_patid
-  ON caliber.lookup_linkage_eligibility (patid);
+  ON @source_schema.lookup_linkage_eligibility (patid);
 -- CREATE INDEX idx_lookup_medical_medcode
---   ON caliber.lookup_medical (medcode);
+--   ON @source_schema.lookup_medical (medcode);
 -- CREATE INDEX idx_lookup_product_prodcode
---   ON caliber.lookup_product (prodcode);
+--   ON @source_schema.lookup_product (prodcode);
 
 CREATE INDEX idx_ons_death_patid
-  ON caliber.ons_death (patid);
+  ON @source_schema.ons_death (patid);
 CREATE INDEX idx_ons_imd_patid
-  ON caliber.ons_imd (patid);
+  ON @source_schema.ons_imd (patid);
 
 CREATE INDEX idx_patient_patid
-  ON caliber.patient (patid);
+  ON @source_schema.patient (patid);
 CREATE INDEX idx_patient_accept
-  ON caliber.patient (accept);
+  ON @source_schema.patient (accept);
 CREATE INDEX idx_patient_gender
-  ON caliber.patient (gender);
+  ON @source_schema.patient (gender);
 
 CREATE INDEX idx_practice_pracid
-  ON caliber.practice (pracid);
+  ON @source_schema.practice (pracid);
 
 CREATE INDEX idx_referral_patid
-  ON caliber.referral (patid);
+  ON @source_schema.referral (patid);
 CREATE INDEX idx_referral_medcode
-  ON caliber.referral (medcode);
+  ON @source_schema.referral (medcode);
 
 CREATE INDEX idx_staff_staffid
-  ON caliber.staff (staffid);
+  ON @source_schema.staff (staffid);
 
 CREATE INDEX idx_test_patid
-  ON caliber.test (patid);
+  ON @source_schema.test (patid);
 CREATE INDEX idx_test_medcode
-  ON caliber.test (medcode);
+  ON @source_schema.test (medcode);
 CREATE INDEX idx_test_enttype
-  ON caliber.test (enttype);
+  ON @source_schema.test (enttype);
 
 CREATE INDEX idx_therapy_patid
-  ON caliber.therapy (patid);
+  ON @source_schema.therapy (patid);
 CREATE INDEX idx_therapy_prodcode
-  ON caliber.therapy (prodcode);
+  ON @source_schema.therapy (prodcode);
