@@ -104,13 +104,13 @@ FROM test_intermediate
   LEFT JOIN cdm5.source_to_target AS enttype_map
     ON enttype_map.source_code = test_intermediate.enttype_string AND
        enttype_map.source_vocabulary_id = 'JNJ_CPRD_T_ET_LOINC'
-  LEFT JOIN cdm5.source_to_concept_map AS tqu_map
+  LEFT JOIN cdm5.source_to_target AS tqu_map
     ON tqu_map.source_code = test_intermediate.qualifier_tqu AND
        tqu_map.source_vocabulary_id = 'CPRD_QUALIFIER'
-  LEFT JOIN cdm5.source_to_concept_map AS opr_map
+  LEFT JOIN cdm5.source_to_target AS opr_map
     ON opr_map.source_code = test_intermediate.operator_opr AND
        opr_map.source_vocabulary_id = 'CPRD_QUALIFIER'
-  LEFT JOIN cdm5.source_to_concept_map AS unit_map
+  LEFT JOIN cdm5.source_to_target AS unit_map
     ON unit_map.source_code = test_intermediate.unit_sum AND
        unit_map.source_vocabulary_id = 'CPRD_UNIT'
 WHERE test_intermediate.eventdate IS NOT NULL

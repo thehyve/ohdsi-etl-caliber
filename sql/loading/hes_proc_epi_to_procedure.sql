@@ -25,7 +25,7 @@ INSERT INTO cdm5.procedure_occurrence
 
     COALESCE(hes_proc_epi.evdate, hes_proc_epi.epistart) :: TIMESTAMP AS procedure_datetime,
 
-    COALESCE(target_concept.concept_id,0) AS procedure_concept_id,
+    COALESCE(target_concept_id,0) AS procedure_concept_id,
 
     hes_proc_epi.opcs AS procedure_source_value,
 
@@ -39,10 +39,9 @@ INSERT INTO cdm5.procedure_occurrence
     NULL AS provider_id
 
   FROM @source_schema.hes_proc_epi as hes_proc_epi
-    LEFT JOIN cdm5.concept AS target_concept
-      ON hes_proc_epi.opcs = replace(concept_code, '.', '')
-         AND vocabulary_id = 'OPCS4'
-         AND standard_concept = 'S'
+  LEFT JOIN cdm5.source_to_target AS opcs_map
+    ON hes_proc_epi.opcs = replace(source_code, '.', '')
+    AND source_vocabulary_id = 'OPCS4'
   WHERE hes_proc_epi.opcs IS NOT NULL
 --         AND hes_proc_epi.opcs NOT IN ('&', '&amp;')
 ;

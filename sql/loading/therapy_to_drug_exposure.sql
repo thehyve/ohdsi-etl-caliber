@@ -70,17 +70,16 @@ SELECT
   END AS visit_occurrence_id
 
 FROM @source_schema.therapy AS therapy
-	LEFT JOIN cdm5.source_to_concept_map AS product_map
-		ON therapy.prodcode = CAST(product_map.source_code AS INT)
+	LEFT JOIN cdm5.source_to_target AS product_map
+		ON therapy.prodcode :: TEXT = product_map.source_code
 	  AND product_map.source_vocabulary_id = 'CPRD_PRODUCT'
-	LEFT JOIN cdm5.concept AS concept
-		ON product_map.target_concept_id = concept.concept_id
 	LEFT JOIN public.numdays_aggregate_full AS numdays_aggregate_full
 		USING (prodcode, ndd, qty, numpacks)
 	LEFT JOIN public.numdays_aggregate_prodcode AS numdays_aggregate_prodcode
 		USING (prodcode)
 WHERE
 	therapy.eventdate IS NOT NULL
-	AND therapy.prodcode > 1 -- 1 is an invalid prodcode
-	AND (concept.domain_id = 'Drug' OR concept.concept_id = 0 ) -- Note: also include unmapped concepts here
+	AND therapy.prodcode > 1 -- 0 and 1 are invalid prodcodes
+	-- include not mapped to other tables and unmapped concepts
+	AND (product_map.target_domain_id != 'Device' OR product_map.target_domain_id IS NULL)
 ;
