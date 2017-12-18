@@ -117,13 +117,15 @@ class EtlWrapper(object):
             self._apply_constraints()
 
     def _load_vocabulary_mappings(self):
+        self.log("\nLoading concept mapping tables")
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
-        self.execute_sql_file('./resources/cprd_lookups/small_lookups.sql')
-        self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql')
+        self.execute_sql_file('./resources/cprd_lookups/small_lookups.sql', True)
+        self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql', True)
 
     def _prepare_source(self):
+        self.log("\nApplying indices to source...")
         self.execute_sql_file('./sql/source_preprocessing/caliber_indexes.sql', True)
-        self.log("\nIntermediate tables and aggregates...")
+        self.log("Intermediate tables and aggregates...")
         self.execute_sql_file('./sql/source_preprocessing/medcode_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/hes_diagnoses_intermediate.sql', True)
