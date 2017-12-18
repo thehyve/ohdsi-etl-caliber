@@ -79,5 +79,5 @@ INSERT INTO cdm5.measurement
     LEFT JOIN @source_schema.medical AS medical
         ON additional.lookup_type = 'Medical Dictionary' AND
            additional.data_code = medical.medcode :: TEXT
-  WHERE clinical.eventdate IS NOT NULL AND target_domain_id = 'Measurement'
+  WHERE clinical.eventdate IS NOT NULL AND enttype_map.target_domain_id = 'Measurement'
 ;

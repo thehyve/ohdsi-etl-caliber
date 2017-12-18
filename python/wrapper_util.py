@@ -14,12 +14,14 @@ def create_insert_message(sql_command, row_count, execution_time=None):
 
         return create_message(table_into, row_count, execution_time)
 
-    return create_message('Nothing inserted', row_count, execution_time)
+    return create_message(None, row_count, execution_time)
 
 
 def create_message(table_into, row_count, execution_time):
     if table_into:
         table_into = 'Into ' + table_into
+    else:
+        table_into = 'Nothing inserted'
 
     return '{:<40} {:>9,} [{:>8.2f} s]'.format(table_into, row_count, execution_time)
 

@@ -55,9 +55,8 @@ CREATE TABLE cdm5.source_to_target AS
   )
   SELECT *
   FROM maps_to
+
   UNION
+
   SELECT *
   FROM stcm;
-
-CREATE INDEX idx_source
-  ON cdm5.source_to_target (source_vocabulary_id, source_code);
