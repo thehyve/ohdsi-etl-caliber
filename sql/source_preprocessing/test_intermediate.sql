@@ -98,7 +98,7 @@ SELECT
   NULLIF(test_intermediate.unit_sum,'0')     AS unit_source_value,
   unit_map.target_concept_id                 AS unit_concept_id,
   test_intermediate.alternative_source_value AS alternative_source_value,
-  target_domain_id                           AS target_domain_id
+  enttype_map.target_domain_id               AS target_domain_id
 INTO public.test_intermediate
 FROM test_intermediate
   LEFT JOIN cdm5.source_to_target AS enttype_map
@@ -113,4 +113,5 @@ FROM test_intermediate
   LEFT JOIN cdm5.source_to_concept_map AS unit_map
     ON unit_map.source_code = test_intermediate.unit_sum AND
        unit_map.source_vocabulary_id = 'CPRD_UNIT'
+WHERE test_intermediate.eventdate IS NOT NULL
 ;

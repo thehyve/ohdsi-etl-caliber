@@ -56,5 +56,5 @@ INSERT INTO cdm5.observation
     test_intermediate.unit_source_value AS unit_source_value
 
   FROM public.test_intermediate AS test_intermediate
-  WHERE test_intermediate.eventdate IS NOT NULL AND test_intermediate.target_domain_id = 'Observation'
+  WHERE target_domain_id = 'Observation'
 ;
