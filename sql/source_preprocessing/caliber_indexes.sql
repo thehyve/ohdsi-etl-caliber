@@ -75,6 +75,8 @@ CREATE INDEX IF NOT EXISTS idx_lookup_product_prodcode
   ON @source_schema.product (prodcode); -- originally called lookup_product
 CREATE INDEX IF NOT EXISTS idx_lookup_linkage_eligibility_patid
   ON @source_schema.lookup_linkage_eligibility (patid);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_auxiliary_lookups_type
+  ON @source_schema.auxiliary_lookups (lookup_type, code);
 
 CREATE INDEX IF NOT EXISTS idx_ons_death_patid
   ON @source_schema.ons_death (patid);

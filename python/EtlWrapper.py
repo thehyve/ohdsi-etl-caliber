@@ -119,7 +119,10 @@ class EtlWrapper(object):
     def _load_vocabulary_mappings(self):
         self.log("\nLoading concept mapping tables")
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
-        self.execute_sql_file('./resources/cprd_lookups/small_lookups.sql', True)
+
+        # porting from previous version # TODO: remove
+        self.execute_sql_query("CREATE TABLE caliber.auxiliary_lookups AS SELECT * FROM public.cprd_lookup;")
+
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql', True)
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target_indexes.sql', True)
 

@@ -76,9 +76,10 @@ The source schema should contain the following tables:
 * medical
 * product
 * entity
+* auxiliary_lookups
 
 ### Lookup tables
-If the `medical`, `product` and `entity` lookup tables are not yet included in the caliber schema,
+If the `medical`, `product`, `entity` and/or `small_lookups` lookup tables are not yet included in the caliber schema,
  they can be created and loaded from the ETL repository.
 
 First clone from git or download source code
@@ -90,6 +91,8 @@ cd ohdsi-etl-caliber
 Then create and load lookup tables with:
 ```bash
 sudo -u postgres psql -c "ALTER DATABASE <database_name> SET search_path TO <source_schema_name>;"
-sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/ddl_lookups.sql
-sudo -u postgres psql -d <database_name> -f sql/source_preprocessing/load_lookups.sql
+sudo -u postgres psql -d <database_name> -f resources/cprd_lookups/create_entity.sql
+sudo -u postgres psql -d <database_name> -f resources/cprd_lookups/create_medical.sql
+sudo -u postgres psql -d <database_name> -f resources/cprd_lookups/create_product.sql
+sudo -u postgres psql -d <database_name> -f resources/cprd_lookups/create_auxiliary_lookups.sql
 ```

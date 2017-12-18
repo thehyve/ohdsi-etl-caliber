@@ -67,7 +67,7 @@ INSERT INTO cdm5.observation
     LEFT JOIN cdm5.source_to_target AS enttype_map
         ON enttype_map.source_code = additional.enttype_string AND
            enttype_map.source_vocabulary_id IN ('JNJ_CPRD_ET_LOINC','JNJ_CPRD_SCORE_LOINC')
-    LEFT JOIN public.cprd_lookup AS cprd_lookup
+    LEFT JOIN @source_schema.auxiliary_lookups AS cprd_lookup
         ON cprd_lookup.lookup_type = additional.lookup_type AND
            cprd_lookup.code = additional.data_code
     LEFT JOIN cdm5.source_to_target AS unit_map
