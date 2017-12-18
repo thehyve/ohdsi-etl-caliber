@@ -24,9 +24,12 @@ __version__ = '0.1.0-SNAPSHOT'
               help='**DEPRECATED** Target schema where OMOP CDM tables are created')
 @click.option('--debug', default=False, metavar='<debug_mode>', is_flag=True,
               help='In debug mode, the table constraints are applied before loading')
+@click.option('--skipvocab', default=False, metavar='<skip_vocab>', is_flag=True,
+              help='When provided, the time consuming loading and pre-processing '
+                   'of source to target vocabularies is skipped')
 @click.option('--logger', '-l', default='', metavar='<file_name>',
               help='Filename of the file where the log will be written (log_<timestamp>.txt)')
-def main(database, username, password, hostname, port, source, target, debug, logger):
+def main(database, username, password, hostname, port, source, target, debug, skipvocab, logger):
     """CALIBER to OMOP CDM, an ETL procedure
     """
     if not logger:
@@ -35,7 +38,7 @@ def main(database, username, password, hostname, port, source, target, debug, lo
     # Connect to database
     eng = create_engine('postgresql://%s:%s@%s:%s/%s' % (username, password, hostname, port, database))
     with eng.connect() as connection, open(logger, 'w') as f_log:
-        etl = EtlWrapper(connection, source, target, debug)
+        etl = EtlWrapper(connection, source, target, debug, skipvocab)
         etl.set_log_file(f_log)
         etl.log("ETL version " + __version__)
         etl.execute()

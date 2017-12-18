@@ -11,11 +11,13 @@ class EtlWrapper(object):
         to get direct feedback if there are issues. This does make loading slower.
     """
 
-    def __init__(self, connection, source_schema, target_schema, debug):
+    def __init__(self, connection, source_schema, target_schema, debug, skip_vocab):
         self.connection = connection
         self.source_schema = source_schema
         self.target_schema = target_schema
         self.debug = debug
+        self.do_skip_vocabulary = skip_vocab
+
         self.n_queries_executed = 0
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
@@ -67,7 +69,8 @@ class EtlWrapper(object):
 
         # Preparing the database
         self._prepare_cdm()
-        self._load_vocabulary_mappings()
+        if not self.do_skip_vocabulary:
+            self._load_vocabulary_mappings()
 
         # Source preparation
         self._prepare_source()
