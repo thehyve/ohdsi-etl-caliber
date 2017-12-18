@@ -63,23 +63,21 @@ INSERT INTO cdm5.measurement
     additional.unit_code AS unit_source_value
 
   FROM public.additional_intermediate AS additional
-  JOIN @source_schema.clinical AS clinical USING(adid, patid)
-  LEFT JOIN cdm5.source_to_concept_map AS enttype_map
-      ON enttype_map.source_code = additional.enttype_string AND
-         enttype_map.source_vocabulary_id IN ('JNJ_CPRD_ET_LOINC','JNJ_CPRD_SCORE_LOINC')
-  LEFT JOIN cdm5.concept AS target_concept
-      ON target_concept.concept_id = enttype_map.target_concept_id
-  LEFT JOIN public.cprd_lookup AS cprd_lookup
-      ON cprd_lookup.lookup_type = additional.lookup_type AND
-         cprd_lookup.code = additional.data_code
-  LEFT JOIN cdm5.source_to_concept_map AS unit_map
-      ON unit_map.source_code = additional.unit_code AND
-         unit_map.source_vocabulary_id = 'CPRD_UNIT'
-  LEFT JOIN @source_schema.product AS product
-    ON additional.lookup_type = 'Product Dictionary' AND
-       additional.data_code = product.prodcode :: TEXT
-  LEFT JOIN @source_schema.medical AS medical
-    ON additional.lookup_type = 'Medical Dictionary' AND
-       additional.data_code = medical.medcode :: TEXT
-  WHERE clinical.eventdate IS NOT NULL AND target_concept.domain_id = 'Measurement'
+    JOIN @source_schema.clinical AS clinical USING(adid, patid)
+    LEFT JOIN cdm5.source_to_target AS enttype_map
+        ON enttype_map.source_code = additional.enttype_string AND
+           enttype_map.source_vocabulary_id IN ('JNJ_CPRD_ET_LOINC','JNJ_CPRD_SCORE_LOINC')
+    LEFT JOIN public.cprd_lookup AS cprd_lookup
+        ON cprd_lookup.lookup_type = additional.lookup_type AND
+           cprd_lookup.code = additional.data_code
+    LEFT JOIN cdm5.source_to_target AS unit_map
+        ON unit_map.source_code = additional.unit_code AND
+           unit_map.source_vocabulary_id = 'CPRD_UNIT'
+    LEFT JOIN @source_schema.product AS product
+        ON additional.lookup_type = 'Product Dictionary' AND
+           additional.data_code = product.prodcode :: TEXT
+    LEFT JOIN @source_schema.medical AS medical
+        ON additional.lookup_type = 'Medical Dictionary' AND
+           additional.data_code = medical.medcode :: TEXT
+  WHERE clinical.eventdate IS NOT NULL AND target_domain_id = 'Measurement'
 ;
