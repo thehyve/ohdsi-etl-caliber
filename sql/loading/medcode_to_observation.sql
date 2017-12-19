@@ -46,5 +46,5 @@ INSERT INTO cdm5.observation
   FROM public.medcode_intermediate AS medcode_intermediate
     LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)
   -- All 'others'
-  WHERE target_domain_id NOT IN ('Condition','Device','Drug','Measurement', 'Procedure')
+  WHERE target_domain_id NOT IN ('Condition','Device','Drug','Measurement', 'Procedure') OR target_domain_id IS NULL
 ;

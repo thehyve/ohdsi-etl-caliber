@@ -52,6 +52,6 @@ INSERT INTO cdm5.drug_exposure
   -- If from immunisation table, the immunisation status has to be 'Given'
   WHERE target_domain_id = 'Drug' AND (
     medcode_intermediate.immunisation_status = 'Given' OR
-    lower(medcode_intermediate.source_table) NOT LIKE 'immunisation'
+    medcode_intermediate.source_table NOT LIKE 'immunisation'
   )
 ;

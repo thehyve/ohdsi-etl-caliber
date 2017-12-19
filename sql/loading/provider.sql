@@ -26,8 +26,8 @@ INSERT INTO cdm5.provider (
     staff.role :: VARCHAR                               AS specialty_source_value
 
   FROM @source_schema.staff AS staff
-    LEFT JOIN cdm5.source_to_concept_map AS specialty_map
-      ON staff.role = (specialty_map.source_code :: INT)
+    LEFT JOIN cdm5.source_to_target AS specialty_map
+      ON staff.role :: TEXT = specialty_map.source_code
          AND specialty_map.source_vocabulary_id = 'JNJ_CPRD_PROV_SPEC'
 
   UNION -- ensure a constraint violation will occur in case of duplicates
@@ -50,7 +50,7 @@ INSERT INTO cdm5.provider (
     tretspef                              AS specialty_source_value
 
   FROM @source_schema.hes_op_clinical AS hoc
-    LEFT JOIN cdm5.source_to_concept_map AS cms2_map
+    LEFT JOIN cdm5.source_to_target AS cms2_map
       ON hoc.tretspef = cms2_map.source_code
          AND cms2_map.source_vocabulary_id = 'JNJ_CPRD_PROV_CMS2'
     LEFT JOIN cdm5.concept AS source_concept

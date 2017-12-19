@@ -65,19 +65,13 @@ hes_diagnoses_icd_matched AS (
 )
 SELECT
   hes_diagnoses.*,
-  icd_concept_id as source_concept_id
-  ,coalesce(icd_map.concept_id_2, 0) AS target_concept_id
-  ,coalesce(target_concept.domain_id, source_concept.domain_id) AS target_domain_id
+  icd_concept_id AS source_concept_id,
+  coalesce(icd_map.target_concept_id, 0) AS target_concept_id,
+  coalesce(target_domain_id, source_domain_id) AS target_domain_id
 
 INTO public.hes_diagnoses_intermediate
 
 FROM hes_diagnoses_icd_matched AS hes_diagnoses
-  LEFT JOIN cdm5.concept AS source_concept
-    ON hes_diagnoses.icd_concept_id = source_concept.concept_id
-  LEFT JOIN cdm5.concept_relationship AS icd_map
-    ON hes_diagnoses.icd_concept_id = icd_map.concept_id_1 AND
-       icd_map.relationship_id = 'Maps to' AND
-       icd_map.invalid_reason IS NULL
-  LEFT JOIN cdm5.concept AS target_concept
-    ON icd_map.concept_id_2 = target_concept.concept_id
+  LEFT JOIN cdm5.source_to_target AS icd_map
+    ON hes_diagnoses.icd_concept_id = icd_map.source_concept_id
 ;

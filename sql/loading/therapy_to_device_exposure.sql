@@ -37,13 +37,11 @@ SELECT
   END AS visit_occurrence_id
 
 FROM @source_schema.therapy AS therapy
-	LEFT JOIN cdm5.source_to_concept_map AS product_map
-		ON therapy.prodcode = CAST(product_map.source_code AS INT)
+	LEFT JOIN cdm5.source_to_target AS product_map
+		ON therapy.prodcode :: TEXT = product_map.source_code
 			 AND product_map.source_vocabulary_id = 'CPRD_PRODUCT'
-	LEFT JOIN cdm5.concept AS concept
-		ON product_map.target_concept_id = concept.concept_id
 WHERE
 	therapy.eventdate IS NOT NULL
 	AND therapy.prodcode > 1 -- 1 is an invalid prodcode
-	AND concept.domain_id = 'Device'
+	AND product_map.target_domain_id = 'Device'
 ;

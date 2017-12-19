@@ -26,7 +26,7 @@ INSERT INTO cdm5.procedure_occurrence
       ELSE NULL
     END AS visit_occurrence_id,
 
-    COALESCE(target_concept.concept_id,0) AS procedure_concept_id,
+    COALESCE(target_concept_id,0) AS procedure_concept_id,
 
     hes_op_clinical_proc.opcs AS procedure_source_value,
 
@@ -41,10 +41,9 @@ INSERT INTO cdm5.procedure_occurrence
   FROM @source_schema.hes_op_clinical_proc AS hes_op_clinical_proc
     JOIN @source_schema.hes_op_clinical AS hes_op_clinical USING (patid, attendkey)
     JOIN @source_schema.hes_op_appt AS hes_op_appt USING (patid, attendkey)
-    LEFT JOIN cdm5.concept AS target_concept
-      ON hes_op_clinical_proc.opcs = replace(concept_code, '.', '')
-         AND vocabulary_id = 'OPCS4'
-         AND standard_concept = 'S'
+    LEFT JOIN cdm5.source_to_target AS opcs_map
+      ON hes_op_clinical_proc.opcs = replace(source_code, '.', '')
+         AND source_vocabulary_id = 'OPCS4'
   WHERE hes_op_clinical_proc.opcs IS NOT NULL
         -- A status code of 8 indicates that no operation is carried out
         AND hes_op_clinical.operstat != '8'

@@ -11,11 +11,13 @@ class EtlWrapper(object):
         to get direct feedback if there are issues. This does make loading slower.
     """
 
-    def __init__(self, connection, source_schema, target_schema, debug):
+    def __init__(self, connection, source_schema, target_schema, debug, skip_vocab):
         self.connection = connection
         self.source_schema = source_schema
         self.target_schema = target_schema
         self.debug = debug
+        self.do_skip_vocabulary = skip_vocab
+
         self.n_queries_executed = 0
         self.n_queries_failed = 0
         self.total_rows_inserted = 0
@@ -67,7 +69,8 @@ class EtlWrapper(object):
 
         # Preparing the database
         self._prepare_cdm()
-        self._load_vocabulary_mappings()
+        if not self.do_skip_vocabulary:
+            self._load_vocabulary_mappings()
 
         # Source preparation
         self._prepare_source()
@@ -117,10 +120,19 @@ class EtlWrapper(object):
             self._apply_constraints()
 
     def _load_vocabulary_mappings(self):
+        self.log("\nLoading concept mapping tables")
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
-        self.execute_sql_file('./resources/cprd_lookups/small_lookups.sql')
+
+        # porting from previous version # TODO: remove
+        self.log("If the following gives an error, then the database is already setup correctly")
+        self.execute_sql_query("CREATE TABLE @source_schema.auxiliary_lookups AS SELECT * FROM public.cprd_lookup;")
+
+        self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql', True)
+        self.execute_sql_file('./sql/vocabulary_mapping/source_to_target_indexes.sql', True)
 
     def _prepare_source(self):
+        self.log("\nApplying indexes to source...")
+        self.execute_sql_file('./sql/source_preprocessing/caliber_indexes.sql', True)
         self.log("\nIntermediate tables and aggregates...")
         self.execute_sql_file('./sql/source_preprocessing/medcode_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
