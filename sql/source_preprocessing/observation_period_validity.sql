@@ -8,16 +8,17 @@ WITH death AS (
       FULL OUTER JOIN @source_schema.ons_death AS pat_ons
         ON pat.patid = pat_ons.patid
 ), obs_period_dates AS (
-    SELECT DISTINCT ON (p.patid, prac.pracid)
-      p.patid,
-      greatest(p.crd, prac.uts)                   AS obs_period_start_date,
-      least(p.tod, prac.lcd, death.ons_pat_death) AS obs_period_end_date
+    SELECT DISTINCT ON (patient.patid, prac.pracid)
+      patient.patid,
+      greatest(patient.crd, prac.uts)                   AS obs_period_start_date,
+      death.ons_pat_death                               AS death_date,
+      least(patient.tod, prac.lcd, death.ons_pat_death) AS obs_period_end_date
 
-    FROM @source_schema.patient AS p
+    FROM @source_schema.patient AS patient
       LEFT JOIN @source_schema.practice AS prac
-        ON createCareSiteId(p.patid) = prac.pracid
+        ON createCareSiteId(patient.patid) = prac.pracid
       LEFT JOIN death AS death
-        ON p.patid = death.patid
+        ON patient.patid = death.patid
 )
 
 SELECT
@@ -28,8 +29,9 @@ SELECT
   -- End date with fallback on 2016-03-08 TODO: set as variable
   coalesce(obs_period_end_date, to_date('20160308', 'yyyymmdd')) AS obs_period_end_date,
 
-  obs_period_start_date < obs_period_end_date AS valid_obs_period
+  obs_period_start_date < obs_period_end_date                    AS valid_obs_period,
+  death_date                                                     AS death_date
 
 INTO public.obs_period_validity
 FROM obs_period_dates
-WHERE obs_period_start_date IS NOT NULL
+WHERE obs_period_start_date IS NOT NULL;
