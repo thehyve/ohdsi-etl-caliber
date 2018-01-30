@@ -23,7 +23,7 @@ INSERT INTO cdm5.death
   SELECT DISTINCT ON (patient.patid)
 
     patient.patid                              AS person_id,
-    coalesce(ons_death.dod, patient.deathdate) AS death_date,
+    obs_period_validity.death_date              AS death_date,
 
     -- EHR record
     38003569                                   AS death_type_concept_id,
@@ -44,4 +44,4 @@ INSERT INTO cdm5.death
          snomed_code.relationship_id = 'Maps to' AND
          snomed_code.invalid_reason IS NULL
   WHERE obs_period_validity.valid_obs_period IS NOT FALSE -- also allow NULL
-        AND (ons_death.dod IS NOT NULL OR patient.deathdate IS NOT NULL);
+        AND obs_period_validity.death_date IS NOT NULL;
