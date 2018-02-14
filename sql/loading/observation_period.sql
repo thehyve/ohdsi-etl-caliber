@@ -25,4 +25,4 @@ INSERT INTO cdm5.observation_period
       ON pat.patid = od.patid
     LEFT JOIN public.obs_period_validity AS obs_validity
       ON pat.patid = obs_validity.patid
-  WHERE obs_validity.valid_obs_period IS NOT FALSE;
+  WHERE obs_validity.valid_obs_period IS NOT FALSE AND pat.patid IS NOT NULL;

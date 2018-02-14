@@ -34,4 +34,4 @@ SELECT
 
 INTO public.obs_period_validity
 FROM obs_period_dates
-WHERE obs_period_start_date IS NOT NULL;
+WHERE obs_period_start_date IS NOT NULL AND patid IS NOT NULL;
