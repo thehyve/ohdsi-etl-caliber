@@ -8,6 +8,7 @@ WITH cases (expected, actual) AS (
     ,(19, createCareSiteId(250019))
     ,(15, createCareSiteId(242015))
     ,(456, createCareSiteId(123456))
+    ,(456, createCareSiteId(CAST(123456 AS BIGINT)))
 )
 SELECT
   CASE
