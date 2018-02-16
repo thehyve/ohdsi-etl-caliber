@@ -11,10 +11,9 @@ class EtlWrapper(object):
         to get direct feedback if there are issues. This does make loading slower.
     """
 
-    def __init__(self, connection, source_schema, target_schema, debug, skip_vocab):
+    def __init__(self, connection, source_schema, debug, skip_vocab):
         self.connection = connection
         self.source_schema = source_schema
-        self.target_schema = target_schema
         self.debug = debug
         self.do_skip_vocabulary = skip_vocab
 
@@ -48,7 +47,10 @@ class EtlWrapper(object):
         if not self.t1:
             self.t1 = time.time()
         else:
-            self.log('Total run time: {:>20.1f} seconds'.format(time.time() - self.t1))
+            total_seconds = time.time() - self.t1
+            m, s = divmod(total_seconds, 60)
+            h, m = divmod(m, 60)
+            self.log('Total run time: {:>20.1f} seconds ({:>1.0f}:{:>02.0f}:{:>02.0f})'.format(total_seconds, h, m, s))
 
     def log_summary(self):
         self.log("\nQueries successfully executed: %d" % self.n_queries_executed)
@@ -62,7 +64,7 @@ class EtlWrapper(object):
         # Source counts
         self.log_source_counts()
 
-        self.log('\n==== ETL started ====')
+        self.log('\n{:=^97}'.format(' ETL '))
 
         # Create functions
         self._create_functions()
@@ -245,7 +247,8 @@ class EtlWrapper(object):
         return result
 
     def log_source_counts(self):
-        self.log('{:=^30}'.format(' Source Counts '))
+        # TODO: check if source_schema exists?
+        self.log('{:=^41}'.format(' Source Counts '))
         self.log('#Persons')
         self.log_table_counts(['patient', 'hes_patient', 'hes_op_patient'])
 
@@ -277,16 +280,17 @@ class EtlWrapper(object):
         self.log_table_counts(['entity', 'medical', 'product'], False)
 
     def log_table_counts(self, tables, log_total=True):
+        format_string = '{:<30.30} {:>10}'
         total = 0
         for t in tables:
             try:
                 count = self.connection.execute("SELECT count(*) FROM %s.%s" % (self.source_schema, t)).fetchone()[0]
             except Exception:
-                self.log('{:<30.30} {:>10}'.format(t, '-'))
+                self.log(format_string.format(t, '-'))
                 continue
-            self.log('{:<30.30} {:>10,}'.format(t, count))
+            self.log(format_string.format(t, count))
             total += count
 
         if len(tables) > 1 and log_total:
             self.log('+'*(30+1+10))
-            self.log('{:<30.30} {:>10,}'.format('TOTAL', total))
+            self.log(format_string.format('TOTAL', total))
