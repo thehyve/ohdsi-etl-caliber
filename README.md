@@ -25,10 +25,12 @@ In this setup the dependencies are installed and the target `cdm5` schema is ini
 ```bash
 python3 main.py -h 127.0.0.1 -d <database-name> -p <port> -u <user> -w <password>  -s <source-schema>
 ```
+By default, a log file will be created in the current working directory.
 
-Supply `--debug` to apply constraints before loading. This gives direct feedback if any constraints fail, but is less optimal for loading speed.
-
-A log file will be created in the current working directory.
+Other parameters:
+ - `--debug` to apply constraints before loading. This gives direct feedback if any constraints fail, but is less optimal for loading speed.
+ - `--skipvocab` to skip the time consuming loading and pre-processing of source to target vocabularies.
+ - `--log <file_name>` to supply a different location and name of the log file. 
 
 ## Acknowledgements
 This work builds on the CPRD mapping efforts made by Janssen, led by Amy Matcho. The original ETL documentation can be found [here](https://github.com/OHDSI/ETL-CDMBuilder/tree/master/man/CPRD)
