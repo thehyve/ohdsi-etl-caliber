@@ -50,13 +50,18 @@ INSERT INTO cdm5.measurement
 
     -- Description of the code belonging to that lookup type, product code or medical code.
     -- If no description available, insert date. If date field empty, then insert datafield name.
-    coalesce(
-        cprd_lookup.description,
-        product.productname,
-        medical.readterm,
-        additional.data_date :: TEXT,
-        additional.datafield_name
-    ) AS value_as_string,
+    -- Trim to 50 characters
+    substr(
+      coalesce(
+          cprd_lookup.description,
+          product.productname,
+          medical.readterm,
+          additional.data_date :: TEXT,
+          additional.datafield_name
+      ),
+      0,
+      50
+    ) AS value_source_value,
 
     unit_map.target_concept_id AS unit_concept_id,
 

@@ -4,7 +4,7 @@ from python.EtlWrapper import EtlWrapper
 from sqlalchemy import create_engine
 import click
 
-__version__ = '0.1.1'
+__version__ = '0.1.2-SNAPSHOT'
 
 
 @click.command()
@@ -20,8 +20,6 @@ __version__ = '0.1.1'
               help='User password ()')
 @click.option('--source', '-s', default='caliber', metavar='<schema_name>',
               help='Source schema containing with CALIBER tables (caliber)')
-@click.option('--target', '-t', default='cdm5', metavar='<schema_name>',
-              help='**DEPRECATED** Target schema where OMOP CDM tables are created')
 @click.option('--debug', default=False, metavar='<debug_mode>', is_flag=True,
               help='In debug mode, the table constraints are applied before loading')
 @click.option('--skipvocab', default=False, metavar='<skip_vocab>', is_flag=True,
@@ -29,7 +27,7 @@ __version__ = '0.1.1'
                    'of source to target vocabularies is skipped')
 @click.option('--logger', '-l', default='', metavar='<file_name>',
               help='Filename of the file where the log will be written (log_<timestamp>.txt)')
-def main(database, username, password, hostname, port, source, target, debug, skipvocab, logger):
+def main(database, username, password, hostname, port, source, debug, skipvocab, logger):
     """CALIBER to OMOP CDM, an ETL procedure
     """
     if not logger:
@@ -38,10 +36,11 @@ def main(database, username, password, hostname, port, source, target, debug, sk
     # Connect to database
     eng = create_engine('postgresql://%s:%s@%s:%s/%s' % (username, password, hostname, port, database))
     with eng.connect() as connection, open(logger, 'w') as f_log:
-        etl = EtlWrapper(connection, source, target, debug, skipvocab)
+        etl = EtlWrapper(connection, source, debug, skipvocab)
         etl.set_log_file(f_log)
         etl.log("ETL version " + __version__)
         etl.execute()
+
 
 if __name__ == "__main__":
     if sys.version_info > (3, 0):

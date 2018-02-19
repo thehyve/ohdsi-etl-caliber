@@ -1,7 +1,7 @@
 /*
 Gets the practice id from the person id
 */
-CREATE OR REPLACE FUNCTION createCareSiteId(patid INTEGER)
+CREATE OR REPLACE FUNCTION createCareSiteId(patid BIGINT)
   RETURNS INTEGER AS
 $$
 BEGIN

@@ -50,12 +50,16 @@ INSERT INTO cdm5.observation
 
     -- Description of the code belonging to that lookup type, product code or medical code.
     -- If no description available, insert date. If date field empty, then insert datafield name.
-    coalesce(
-        cprd_lookup.description,
-        product.productname,
-        medical.readterm,
-        additional.data_date :: TEXT,
-        additional.datafield_name
+    substr(
+      coalesce(
+          cprd_lookup.description,
+          product.productname,
+          medical.readterm,
+          additional.data_date :: TEXT,
+          additional.datafield_name
+      ),
+      0,
+      60
     ) AS value_as_string,
 
     unit_map.target_concept_id AS unit_concept_id,

@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS public.test_intermediate;
 WITH test_with_entity AS (
   SELECT
     test.*,
-    entity.data_fields
+    entity.data_fields::INTEGER AS data_fields
   FROM @source_schema.test AS test
     JOIN @source_schema.entity AS entity USING (enttype)
 ), test_intermediate AS (
