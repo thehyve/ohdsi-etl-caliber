@@ -26,7 +26,7 @@ WITH medcode_union (patid, eventdate, constype, consid, medcode, staffid, status
 
   UNION ALL
 
-  SELECT patid, eventdate, constype, consid, medcode, staffid, status, 'immunisation'
+  SELECT patid, eventdate, constype, consid, medcode, staffid, status::varchar, 'immunisation'
   FROM @source_schema.immunisation
 )
 SELECT

@@ -125,10 +125,6 @@ class EtlWrapper(object):
         self.log("\nLoading concept mapping tables")
         self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
 
-        # porting from previous version # TODO: remove
-        self.log("If the following gives an error, then the database is already setup correctly")
-        self.execute_sql_query("CREATE TABLE @source_schema.auxiliary_lookups AS SELECT * FROM public.cprd_lookup;")
-
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql', True)
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target_indexes.sql', True)
 
