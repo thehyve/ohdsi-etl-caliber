@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 N_DATA_COLUMNS = 7
 
+
 def sql_string_param(s):
     if s is None:
         return "NULL"
@@ -156,7 +157,11 @@ def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup
     if data_lookup is None:
         data_numeric = data_value
     elif data_lookup == 'dd/mm/yyyy':
-        data_date = datetime.strptime(data_value, '%d/%m/%Y')
+        # support two date formats
+        if '/' in data_value:
+            data_date = datetime.strptime(data_value, '%d/%m/%Y')
+        else:
+            data_date = datetime.strptime(data_value, '%Y%m%d')
     else:
         # All other values with a lookup
         data_code = data_value
