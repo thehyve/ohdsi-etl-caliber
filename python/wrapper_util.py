@@ -23,7 +23,14 @@ def create_message(table_into, row_count, execution_time):
     else:
         table_into = 'Nothing inserted'
 
-    return '{:<40} {:>9,} [{:>8.2f} s]'.format(table_into, row_count, execution_time)
+    message = '{:<40.40} {:>9,} [{:>8.2f} s'.format(table_into, row_count, execution_time)
+
+    if row_count > 0:
+        message += '| {:>.1e} s/#]'.format(execution_time/row_count)
+    else:
+        message += ']'
+
+    return message
 
 
 def create_current_file_message(filename):
