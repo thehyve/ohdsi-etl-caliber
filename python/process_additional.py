@@ -185,8 +185,7 @@ def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup
 
 def process_additional(connection, source_schema, target_schema, target_table='additional_intermediate'):
     """
-    Takes additional table and generates rows per data field.
-    Yields AdditionalIntermediate ORM objects
+    Takes additional table and inserts rows per data field.
     """
 
     # Create the intermediate table

@@ -131,6 +131,7 @@ class EtlWrapper(object):
     def _prepare_source(self):
         self.log("\nApplying indexes to source...")
         self.execute_sql_file('./sql/source_preprocessing/caliber_indexes.sql', True)
+
         self.log("\nIntermediate tables and aggregates...")
         self.execute_sql_file('./sql/source_preprocessing/medcode_intermediate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/test_intermediate.sql', True)
@@ -138,6 +139,9 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/source_preprocessing/therapy_numdays_aggregate.sql', True)
         self.execute_sql_file('./sql/source_preprocessing/observation_period_validity.sql', True)
         self.execute_process_additional()
+
+        self.log("\nApplying indexes to intermediates...")
+        self.execute_sql_file('./sql/source_preprocessing/intermediate_table_indexes.sql', True)
 
     def _load(self):
         self.log("\nMain loading queries...")
