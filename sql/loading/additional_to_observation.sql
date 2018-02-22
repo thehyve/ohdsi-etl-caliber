@@ -24,11 +24,12 @@ INSERT INTO cdm5.observation
 
     clinical.staffid AS provider_id,
 
-    CASE
-    WHEN createvisitid(additional.patid, clinical.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-      THEN createvisitid(additional.patid, clinical.eventdate)
-    ELSE NULL
-    END AS visit_occurrence_id,
+    createvisitid(additional.patid, clinical.eventdate),
+--     CASE
+--     WHEN createvisitid(additional.patid, clinical.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+--       THEN createvisitid(additional.patid, clinical.eventdate)
+--     ELSE NULL
+--     END AS visit_occurrence_id,
 
     -- Score entity is a patient reported value, others regular observations
     CASE left(additional.enttype_string,3)

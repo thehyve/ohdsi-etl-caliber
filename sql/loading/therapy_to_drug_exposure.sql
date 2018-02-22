@@ -63,11 +63,12 @@ SELECT
 	therapy.issueseq	AS	refills,
 
   -- Visit id only assigned If record date for this patient exists in visit_occurrence table
-  CASE
-    WHEN createvisitid(therapy.patid, therapy.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-      THEN createvisitid(therapy.patid, therapy.eventdate)
-    ELSE NULL
-  END AS visit_occurrence_id
+	createvisitid(therapy.patid, therapy.eventdate)
+--   CASE
+--     WHEN createvisitid(therapy.patid, therapy.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+--       THEN createvisitid(therapy.patid, therapy.eventdate)
+--     ELSE NULL
+--   END AS visit_occurrence_id
 
 FROM @source_schema.therapy AS therapy
 	LEFT JOIN cdm5.source_to_target AS product_map
