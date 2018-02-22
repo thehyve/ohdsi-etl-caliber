@@ -209,11 +209,12 @@ def process_additional(connection, source_schema, target_schema, target_table='a
         rows = additional_table.fetchmany(BLOCK_SIZE)
 
         # Perform the row processing in parallel
+        # Note: process_row has to be a simple function, it cannot be a class method
         result = pool.map(process_row, rows)
         sql_insert_values = [value for values in result for value in values]
 
         sql_insert = SQL_INSERT_BASE + ' ' + ','.join(sql_insert_values)
-        insert_result = connection.execute(text(sql_insert))
+        insert_result = connection.execute(text(sql_insert).execution_options(autocommit=True))
 
         total_rows_inserted += insert_result.rowcount
 

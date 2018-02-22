@@ -37,9 +37,12 @@ class EtlWrapper(object):
         """Write to standard output and the log file (if set)"""
         print(message, end=end, flush=True)
         if self.log_file:
-            self.log_file.write(message)
-            self.log_file.write(end)
-            self.log_file.flush()
+            self.log_to_file(message, end)
+
+    def log_to_file(self, message, end='\n'):
+        self.log_file.write(message)
+        self.log_file.write(end)
+        self.log_file.flush()
 
     def log_run_time(self):
         """Prints timestamp and starts timer on first call. Prints total execution time on subsequent calls"""
@@ -64,7 +67,7 @@ class EtlWrapper(object):
         # Source counts
         self.log_source_counts()
 
-        self.log('\n{:=^97}'.format(' ETL '))
+        self.log('\n{:=^100}'.format(' ETL '))
 
         # Create functions
         self._create_functions()
@@ -231,7 +234,7 @@ class EtlWrapper(object):
         query = query.replace("@source_schema", self.source_schema)
 
         t1 = time.time()
-        statement = text(query)
+        statement = text(query).execution_options(autocommit=True)
         result = self.connection.execute(statement)
         time_delta = time.time() - t1
 
@@ -248,35 +251,35 @@ class EtlWrapper(object):
 
     def log_source_counts(self):
         # TODO: check if source_schema exists?
-        self.log('{:=^41}'.format(' Source Counts '))
-        self.log('#Persons')
+        self.log_to_file('{:=^41}'.format(' Source Counts '))
+        self.log_to_file('#Persons')
         self.log_table_counts(['patient', 'hes_patient', 'hes_op_patient'])
 
-        self.log('\n#Visits')
+        self.log_to_file('\n#Visits')
         self.log_table_counts(['consultation', 'hes_diag_hosp', 'hes_op_appt'])
 
-        self.log('\n#Medcode Tables')
+        self.log_to_file('\n#Medcode Tables')
         self.log_table_counts(['clinical', 'referral', 'test', 'immunisation'])
 
-        self.log('\n#Drugs')
+        self.log_to_file('\n#Drugs')
         self.log_table_counts(['therapy'])
 
-        self.log('\n#Observations')
+        self.log_to_file('\n#Observations')
         self.log_table_counts(['additional', 'ons_imd'])
 
-        self.log('\n#Diagnoses')
+        self.log_to_file('\n#Diagnoses')
         self.log_table_counts(['hes_op_clinical_diag', 'hes_diag_epi'])
 
-        self.log('\n#Procedures')
+        self.log_to_file('\n#Procedures')
         self.log_table_counts(['hes_op_clinical_proc', 'hes_proc_epi'])
 
-        self.log('\n#Deaths')
+        self.log_to_file('\n#Deaths')
         self.log_table_counts(['ons_death'])
 
-        self.log('\n#Providers of care')
+        self.log_to_file('\n#Providers of care')
         self.log_table_counts(['staff', 'practice'], False)
 
-        self.log('\n#Lookups')
+        self.log_to_file('\n#Lookups')
         self.log_table_counts(['entity', 'medical', 'product'], False)
 
     def log_table_counts(self, tables, log_total=True):
@@ -286,11 +289,11 @@ class EtlWrapper(object):
             try:
                 count = self.connection.execute("SELECT count(*) FROM %s.%s" % (self.source_schema, t)).fetchone()[0]
             except Exception:
-                self.log(format_string.format(t, '-'))
+                self.log_to_file(format_string.format(t, '-'))
                 continue
-            self.log(format_string.format(t, count))
+            self.log_to_file(format_string.format(t, count))
             total += count
 
         if len(tables) > 1 and log_total:
-            self.log('+'*(30+1+10))
-            self.log(format_string.format('TOTAL', total))
+            self.log_to_file('+'*(30+1+10))
+            self.log_to_file(format_string.format('TOTAL', total))
