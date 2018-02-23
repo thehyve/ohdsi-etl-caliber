@@ -14,7 +14,8 @@ INSERT INTO cdm5.observation
   observation_concept_id,
   observation_source_concept_id,
   observation_source_value,
-  observation_type_concept_id
+  observation_type_concept_id,
+  value_as_concept_id
 )
   SELECT
     medcode_intermediate.person_id,
@@ -41,7 +42,10 @@ INSERT INTO cdm5.observation
       WHEN 'test' THEN 38000280 -- Observation recorded from EHR
       WHEN 'immunisation' THEN 38000280 -- Observation recorded from EHR
       ELSE 0
-    END AS observation_type_concept_id
+    END AS observation_type_concept_id,
+
+    -- Yes
+    4188539 AS value_as_concept_id
 
   FROM public.medcode_intermediate AS medcode_intermediate
     LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)

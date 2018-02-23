@@ -13,11 +13,12 @@ INSERT INTO cdm5.procedure_occurrence
   provider_id
 )
   SELECT
-    CASE
-      WHEN hes_proc_epi.spno IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-      THEN hes_proc_epi.spno
-      ELSE NULL
-    END AS visit_occurrence_id,
+    hes_proc_epi.spno,
+--     CASE
+--       WHEN hes_proc_epi.spno IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+--       THEN hes_proc_epi.spno
+--       ELSE NULL
+--     END AS visit_occurrence_id,
 
     hes_proc_epi.patid AS person_id,
 

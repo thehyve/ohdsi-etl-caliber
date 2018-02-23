@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 N_DATA_COLUMNS = 7
 
+
 def sql_string_param(s):
     if s is None:
         return "NULL"
@@ -156,7 +157,11 @@ def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup
     if data_lookup is None:
         data_numeric = data_value
     elif data_lookup == 'dd/mm/yyyy':
-        data_date = datetime.strptime(data_value, '%d/%m/%Y')
+        # support two date formats
+        if '/' in data_value:
+            data_date = datetime.strptime(data_value, '%d/%m/%Y')
+        else:
+            data_date = datetime.strptime(data_value, '%Y%m%d')
     else:
         # All other values with a lookup
         data_code = data_value
@@ -180,8 +185,7 @@ def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup
 
 def process_additional(connection, source_schema, target_schema, target_table='additional_intermediate'):
     """
-    Takes additional table and generates rows per data field.
-    Yields AdditionalIntermediate ORM objects
+    Takes additional table and inserts rows per data field.
     """
 
     # Create the intermediate table
@@ -205,11 +209,12 @@ def process_additional(connection, source_schema, target_schema, target_table='a
         rows = additional_table.fetchmany(BLOCK_SIZE)
 
         # Perform the row processing in parallel
+        # Note: process_row has to be a simple function, it cannot be a class method
         result = pool.map(process_row, rows)
         sql_insert_values = [value for values in result for value in values]
 
         sql_insert = SQL_INSERT_BASE + ' ' + ','.join(sql_insert_values)
-        insert_result = connection.execute(text(sql_insert))
+        insert_result = connection.execute(text(sql_insert).execution_options(autocommit=True))
 
         total_rows_inserted += insert_result.rowcount
 

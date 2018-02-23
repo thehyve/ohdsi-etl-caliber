@@ -22,11 +22,12 @@ INSERT INTO cdm5.observation
 
     coalesce(test_intermediate.staffid, 0) AS provider_id,
 
-    CASE
-      WHEN createvisitid(test_intermediate.patid, test_intermediate.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
-      THEN createvisitid(test_intermediate.patid, test_intermediate.eventdate)
-      ELSE NULL
-    END AS visit_occurrence_id,
+    createvisitid(test_intermediate.patid, test_intermediate.eventdate),
+--     CASE
+--       WHEN createvisitid(test_intermediate.patid, test_intermediate.eventdate) IN (SELECT visit_occurrence_id FROM cdm5.visit_occurrence)
+--       THEN createvisitid(test_intermediate.patid, test_intermediate.eventdate)
+--       ELSE NULL
+--     END AS visit_occurrence_id,
 
     test_intermediate.eventdate AS observation_date,
 
