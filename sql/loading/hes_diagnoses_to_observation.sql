@@ -11,7 +11,8 @@ INSERT INTO cdm5.observation
   observation_source_concept_id,
   observation_source_value,
   observation_type_concept_id,
-  provider_id
+  provider_id,
+  value_as_concept_id
 )
 SELECT
   hes_diagnoses.person_id AS person_id,
@@ -32,7 +33,10 @@ SELECT
   -- EHR problem list entry
   38000245 observation_type_concept_id,
 
-  hes_diagnoses.provider_id AS provider_id
+  hes_diagnoses.provider_id AS provider_id,
+
+  -- Yes
+  4188539 AS value_as_concept_id
 
 FROM public.hes_diagnoses_intermediate AS hes_diagnoses
   LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)

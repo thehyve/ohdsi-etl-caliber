@@ -6,7 +6,8 @@ INSERT INTO cdm5.observation
   observation_datetime,
   observation_concept_id,
   observation_source_value,
-  observation_type_concept_id
+  observation_type_concept_id,
+  value_as_concept_id
 )
   SELECT
     patient.patid AS person_id,
@@ -47,7 +48,10 @@ INSERT INTO cdm5.observation
     END AS observation_source_value,
 
     -- Patient reported value
-    44818704 AS observation_type_concept_id
+    44818704 AS observation_type_concept_id,
+
+    -- Yes
+    4188539 AS value_as_concept_id
 
   FROM @source_schema.patient AS patient
   -- Exclude 'Data Not Entered'
