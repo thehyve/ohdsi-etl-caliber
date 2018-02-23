@@ -4,7 +4,7 @@ from python.EtlWrapper import EtlWrapper
 from sqlalchemy import create_engine
 import click
 
-__version__ = '0.1.3-SNAPSHOT'
+__version__ = '0.1.4-SNAPSHOT'
 
 
 @click.command()
