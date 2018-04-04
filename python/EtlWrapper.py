@@ -130,7 +130,7 @@ class EtlWrapper(object):
 
         # Preprocess mappings
         # Create source concepts (id > 2_000_000_000)
-        self.log("\nCreating source concepts and mappings")
+        self.log("\nCreating source concepts and two-way mappings")
         self.execute_sql_file('./sql/vocabulary_mapping/source_concept_2B.sql', True)
         self.execute_sql_file('./sql/vocabulary_mapping/source_concept_relationship.sql', True)
 
