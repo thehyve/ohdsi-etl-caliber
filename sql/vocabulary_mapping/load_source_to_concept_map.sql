@@ -13,6 +13,7 @@ INSERT INTO cdm5.vocabulary
 ON CONFLICT DO NOTHING;
 
 /* Load new source to concept maps */
+TRUNCATE TABLE cdm5.source_to_concept_map;
 
 -- Additional Entity Types to LOINC
 COPY cdm5.source_to_concept_map FROM '@absPath/resources/mapping_tables/JNJ_CPRD_ET_LOINC.txt';
