@@ -125,9 +125,16 @@ class EtlWrapper(object):
             self._apply_constraints()
 
     def _load_vocabulary_mappings(self):
-        self.log("\nLoading concept mapping tables")
-        self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
+        self.log("\nLoading source_to_concept_map")
+        self.execute_sql_file('./sql/vocabulary_mapping/load_source_to_concept_map.sql')
 
+        # Preprocess mappings
+        # Create source concepts (id > 2_000_000_000)
+        self.log("\nCreating source concepts and mappings")
+        self.execute_sql_file('./sql/vocabulary_mapping/source_concept_2B.sql', True)
+        self.execute_sql_file('./sql/vocabulary_mapping/source_concept_relationship.sql', True)
+
+        # Create preprocessed table
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql', True)
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target_indexes.sql', True)
 

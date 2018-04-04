@@ -1,9 +1,16 @@
-/* Remove existing source_to_concept_map and custom vocabularies */
-TRUNCATE cdm5.source_to_concept_map;
-DELETE FROM cdm5.vocabulary WHERE vocabulary_concept_id = 0;
+/* Add the 9 vocabulary ids */
+CREATE TEMP TABLE tmp_vocabulary
+  AS
+    SELECT *
+    FROM cdm5.vocabulary
+WITH NO DATA;
 
-/* Add the 7 vocabulary ids */
-COPY cdm5.vocabulary FROM '@absPath/resources/mapping_tables/VOCABULARY.csv' WITH CSV HEADER;
+COPY tmp_vocabulary FROM '@absPath/resources/mapping_tables/VOCABULARY.csv' WITH CSV HEADER;
+
+INSERT INTO cdm5.vocabulary
+  SELECT DISTINCT ON (vocabulary_id) *
+  FROM tmp_vocabulary
+ON CONFLICT DO NOTHING;
 
 /* Load new source to concept maps */
 
