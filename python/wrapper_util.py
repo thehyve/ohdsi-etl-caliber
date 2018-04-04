@@ -8,7 +8,7 @@ def create_insert_message(sql_command, row_count, execution_time=None):
         table_into = '?'
 
         # NOTE: if multiple queries, then rowcount only last number of inserted/updated rows
-        match_into = re.search(r'INTO (.+?)\s', sql_command)
+        match_into = re.search(r'(?:INTO|CREATE TABLE) (.+?)\s', sql_command)
         if match_into:
             table_into = match_into.group(1)
 
