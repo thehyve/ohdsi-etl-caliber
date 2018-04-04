@@ -123,7 +123,7 @@
 372-4	0	JNJ_CPRD_ET_LOINC	Diagnostic Tests Scoring test result Qualifier Negative/Positive	0	LOINC	19800101	20991231	
 38-1	0	JNJ_CPRD_ET_LOINC	Asthma Inhaler ability Inhaler ability Examination	0	LOINC	19800101	20991231	
 39-1	0	JNJ_CPRD_ET_LOINC	Child Health Surveillance CHS locomotion 18 months Locomotion  Problem State	3052212	LOINC	19800101	20991231	
-4-1	0	JNJ_CPRD_ET_LOINC	Lifestyle Smoking Status Smoke/drink Status	40765288	LOINC	19800101	20991231	
+4-1	0	JNJ_CPRD_ET_LOINC	Lifestyle Smoking Status Smoke/drink Status	21494888	LOINC	19800101	20991231
 4-2	0	JNJ_CPRD_ET_LOINC	Lifestyle Smoking Cigarettes per day   	40766929	LOINC	19800101	20991231	
 4-3	0	JNJ_CPRD_ET_LOINC	Lifestyle Smoking Cigars per day   	0	LOINC	19800101	20991231	
 4-4	0	JNJ_CPRD_ET_LOINC	Lifestyle Smoking Ounces of tobacco   	0	LOINC	19800101	20991231	
