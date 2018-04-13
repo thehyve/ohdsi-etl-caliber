@@ -64,7 +64,15 @@ INSERT INTO cdm5.measurement
       50
     ) AS value_source_value,
 
-    unit_map.target_concept_id AS unit_concept_id,
+    -- Hard coded units for specific entities
+    CASE additional.enttype_string
+        WHEN '1-1' THEN 8876 -- diastolic pressure in mmHG
+        WHEN '1-2' THEN 8876 -- systolic pressure in mmHG
+        WHEN '13-1' THEN 9529 -- weight in kg
+        WHEN '13-3' THEN 9531 -- BMI in kg/m2
+        WHEN '14-1' THEN 9546 -- height in m
+        ELSE unit_map.target_concept_id
+    END AS unit_concept_id,
 
     additional.unit_code AS unit_source_value
 
