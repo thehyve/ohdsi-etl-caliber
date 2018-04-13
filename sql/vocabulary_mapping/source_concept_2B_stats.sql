@@ -33,7 +33,7 @@ SELECT
 FROM cdm5.concept_relationship
   JOIN cdm5.concept AS source ON concept_id_1 = source.concept_id AND relationship_id = 'Maps to'
   JOIN cdm5.concept AS target ON concept_id_2 = target.concept_id AND relationship_id = 'Maps to'
-WHERE target.standard_concept IS NULL AND source_concept_id > 2000000000
+WHERE target.standard_concept IS NULL AND source.concept_id > 2000000000
 GROUP BY source.vocabulary_id
 ORDER BY frequency DESC;
 
