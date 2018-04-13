@@ -44,16 +44,15 @@ class EtlWrapper(object):
         self.log_file.write(end)
         self.log_file.flush()
 
-    def log_run_time(self):
-        """Prints timestamp and starts timer on first call. Prints total execution time on subsequent calls"""
+    def log_timestamp(self):
         self.log(time.strftime('\n%a %Y-%m-%d %H:%M:%S'))
-        if not self.t1:
-            self.t1 = time.time()
-        else:
-            total_seconds = time.time() - self.t1
-            m, s = divmod(total_seconds, 60)
-            h, m = divmod(m, 60)
-            self.log('Total run time: {:>20.1f} seconds ({:>1.0f}:{:>02.0f}:{:>02.0f})'.format(total_seconds, h, m, s))
+
+    def log_run_time(self):
+        """Prints total execution time on subsequent"""
+        total_seconds = time.time() - self.t1
+        m, s = divmod(total_seconds, 60)
+        h, m = divmod(m, 60)
+        self.log('\nRun time: {:>20.1f} seconds ({:>1.0f}:{:>02.0f}:{:>02.0f})'.format(total_seconds, h, m, s))
 
     def log_summary(self):
         self.log("\nQueries successfully executed: %d" % self.n_queries_executed)
@@ -62,7 +61,8 @@ class EtlWrapper(object):
 
     def execute(self):
         """Run Caliber to OMOP ETL procedure"""
-        self.log_run_time()
+        self.t1 = time.time()
+        self.log_timestamp()
 
         # Source counts
         self.log_source_counts()
@@ -77,6 +77,8 @@ class EtlWrapper(object):
         if not self.do_skip_vocabulary:
             self._load_vocabulary_mappings()
 
+        self.log_run_time()
+
         # Source preparation
         self._prepare_source()
         self.log_summary()
@@ -88,6 +90,7 @@ class EtlWrapper(object):
         self._load()
 
         self.log_summary()
+        self.log_run_time()
 
         # Derived tables
         self._derive_era()
@@ -97,6 +100,7 @@ class EtlWrapper(object):
         self._apply_indexes()
 
         self.log_run_time()
+        self.log_timestamp()
 
     def _create_functions(self):
         self.execute_sql_file('./sql/functions/createEndDate.sql')
@@ -125,9 +129,16 @@ class EtlWrapper(object):
             self._apply_constraints()
 
     def _load_vocabulary_mappings(self):
-        self.log("\nLoading concept mapping tables")
-        self.execute_sql_file('./sql/vocabulary_mapping/load_mapping_tables.sql')
+        self.log("\nLoading source_to_concept_map")
+        self.execute_sql_file('./sql/vocabulary_mapping/load_source_to_concept_map.sql')
 
+        # Preprocess mappings
+        # Create source concepts (id > 2_000_000_000)
+        self.log("\nCreating source concepts and two-way mappings")
+        self.execute_sql_file('./sql/vocabulary_mapping/source_concept_2B.sql', True)
+        self.execute_sql_file('./sql/vocabulary_mapping/source_concept_relationship.sql', True)
+
+        # Create preprocessed table
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target.sql', True)
         self.execute_sql_file('./sql/vocabulary_mapping/source_to_target_indexes.sql', True)
 

@@ -1,0 +1,7 @@
+connectionDetails:
+  user: john
+  password: secret
+  server: localhost/my_data
+  port: 5432
+sourceSchema: test 
+cdmSchema: cdm
