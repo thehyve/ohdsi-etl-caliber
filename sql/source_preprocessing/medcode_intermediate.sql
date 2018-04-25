@@ -45,7 +45,7 @@ SELECT
   medcode_union.staffid AS provider_id,
 
   -- From join of medical table on cdm5 concept table
-  source_concept_id AS _source_concept_id,
+  read_map.source_concept_id AS _source_concept_id,
 
   medcode_union.medcode AS _source_value,
 
@@ -63,7 +63,7 @@ FROM medcode_union
   LEFT JOIN @source_schema.medical AS medical
     ON medcode_union.medcode = medical.medcode
   LEFT JOIN cdm5.source_to_target AS read_map
-    ON medical.readcode = source_code
+    ON medical.readcode = read_map.source_code
     AND read_map.source_vocabulary_id = 'Read'
 -- Only include rows with date, and valid medcode
 WHERE medcode_union.eventdate IS NOT NULL AND medcode_union.medcode > 0

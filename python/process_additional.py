@@ -6,7 +6,7 @@ N_DATA_COLUMNS = 7
 
 
 def sql_string_param(s):
-    if s is None:
+    if not s:
         return "NULL"
     s = s.replace("'", "''")
     return "'%s'" % s
@@ -139,11 +139,11 @@ def create_score_value(patid, adid, enttype, data_values, data_names):
 
 def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup, unit_code):
     # Empty data value, skip
-    if data_value is None:
+    if not data_value:
         return
 
     # data field is a lookup and value translates to 'Data not entered'
-    if data_lookup is not None and data_value == '0':
+    if data_lookup and data_value == '0':
         return
 
     # Skip unit data
@@ -154,7 +154,7 @@ def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup
     data_date = None
     data_code = None
     data_numeric = None
-    if data_lookup is None:
+    if not data_lookup:
         data_numeric = data_value
     elif data_lookup == 'dd/mm/yyyy':
         # support two date formats
