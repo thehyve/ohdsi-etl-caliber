@@ -228,9 +228,9 @@ class EtlWrapper(object):
           SELECT person_id
           FROM cdm5.person
         )"""
-        self.log("\nDeleting records with non-existent persons...")
+        self.log("\nDeleting records with references to non-existent persons...")
         for cdm_table in ['observation_period', 'visit_occurrence', 'condition_occurrence', 'procedure_occurrence',
-                          'drug_exposure', 'device_exposure', 'measurement', 'observation']:
+                          'drug_exposure', 'device_exposure', 'measurement', 'observation', 'death']:
             query = base_query_person_filter.replace('@cdm_table', cdm_table)
             self.execute_sql_query(query, True)
 
@@ -241,7 +241,7 @@ class EtlWrapper(object):
           SELECT visit_occurrence_id
           FROM cdm5.visit_occurrence
         )"""
-        self.log("\nUnset visit ids that do not exist...")
+        self.log("\nUnset references to non-existent visits...")
         for cdm_table in ['condition_occurrence', 'procedure_occurrence',
                           'drug_exposure', 'device_exposure', 'measurement', 'observation']:
             query = base_query_visit_update.replace('@cdm_table', cdm_table)
