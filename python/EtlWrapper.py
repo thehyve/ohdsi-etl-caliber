@@ -247,6 +247,19 @@ class EtlWrapper(object):
             query = base_query_visit_update.replace('@cdm_table', cdm_table)
             self.execute_sql_query(query, True)
 
+        base_query_provider_update = """
+        UPDATE cdm5.@cdm_table
+        SET provider_id = NULL
+        WHERE provider_id NOT IN (
+          SELECT provider_id
+          FROM cdm5.provider
+        )"""
+        self.log("\nUnset references to non-existent providers...")
+        for cdm_table in ['condition_occurrence', 'procedure_occurrence',
+                          'drug_exposure', 'device_exposure', 'measurement', 'observation']:
+            query = base_query_provider_update.replace('@cdm_table', cdm_table)
+            self.execute_sql_query(query, True)
+
     def _apply_constraints(self):
         if self.is_constraints_applied:
             return
