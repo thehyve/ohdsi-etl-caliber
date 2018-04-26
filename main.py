@@ -23,7 +23,7 @@ __version__ = '0.1.5-SNAPSHOT'
 @click.option('--debug', default=False, metavar='<debug_mode>', is_flag=True,
               help='In debug mode, the table constraints are applied before loading')
 @click.option('--skipvocab', default=False, metavar='<skip_vocab>', is_flag=True,
-              help='When provided, the time consuming loading and pre-processing '
+              help='When provided, the loading and pre-processing '
                    'of source to target vocabularies is skipped')
 @click.option('--logger', '-l', default='', metavar='<file_name>',
               help='Filename of the file where the log will be written (log_<timestamp>.txt)')
