@@ -25,7 +25,7 @@ INSERT INTO cdm5.measurement
     -- Null if id does not exist in visit_occurrence
     visit_occurrence.visit_occurrence_id,
 
-    medcode_intermediate.provider_id,
+    provider.provider_id,
 
     medcode_intermediate._concept_id,
 
@@ -44,5 +44,6 @@ INSERT INTO cdm5.measurement
 
   FROM public.medcode_intermediate AS medcode_intermediate
     LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)
+    LEFT JOIN cdm5.provider ON medcode_intermediate.provider_id = provider.provider_id
   WHERE target_domain_id = 'Measurement'
 ;

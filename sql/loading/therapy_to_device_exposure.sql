@@ -26,8 +26,8 @@ SELECT
   -- EHR Detail
 	44818707 AS device_type_concept_id,
 
-  -- Identifier of the practice staff member entering the data. A value of 0 indicates that the staffid is unknown
-	therapy.staffid AS provider_id,
+  -- Identifier of the practice staff member entering the data.
+	provider.provider_id AS provider_id,
 
   -- Visit id only assigned If record date for this patient exists in visit_occurrence table
 	createvisitid(therapy.patid, therapy.eventdate)
@@ -41,6 +41,7 @@ FROM @source_schema.therapy AS therapy
 	LEFT JOIN cdm5.source_to_target AS product_map
 		ON therapy.prodcode :: TEXT = product_map.source_code
 			 AND product_map.source_vocabulary_id = 'CPRD_PRODUCT'
+	LEFT JOIN cdm5.provider ON therapy.staffid = provider_id
 WHERE
 	therapy.eventdate IS NOT NULL
 	AND therapy.prodcode > 1 -- 1 is an invalid prodcode

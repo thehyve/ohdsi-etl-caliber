@@ -30,7 +30,7 @@ INSERT INTO cdm5.drug_exposure
     -- Null if id does not exist in visit_occurrence
     visit_occurrence.visit_occurrence_id,
 
-    medcode_intermediate.provider_id,
+    provider.provider_id,
 
     medcode_intermediate._concept_id,
 
@@ -49,6 +49,7 @@ INSERT INTO cdm5.drug_exposure
 
   FROM public.medcode_intermediate AS medcode_intermediate
     LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)
+    LEFT JOIN cdm5.provider ON medcode_intermediate.provider_id = provider.provider_id
   -- If from immunisation table, the immunisation status has to be 'Given'
   WHERE target_domain_id = 'Drug' AND (
     medcode_intermediate.immunisation_status = 'Given' OR
