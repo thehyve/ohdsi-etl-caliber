@@ -17,7 +17,7 @@ import os
 import time
 from sqlalchemy import text
 from python.process_additional import process_additional
-from python.wrapper_util import *
+from python.util.message_creation import create_current_file_message, create_insert_message, create_message
 
 
 class EtlWrapper(object):
@@ -107,7 +107,10 @@ class EtlWrapper(object):
         self.log_summary()
         self.log_run_time()
 
-        # Derived tables
+        # Sanitize tables
+        self._post_filter()
+
+        # Derived era tables
         self._derive_era()
 
         # Constraints and Indices
@@ -212,7 +215,62 @@ class EtlWrapper(object):
         self.execute_sql_file('./sql/loading/patient_marital_to_observation.sql', True)
 
     def _derive_era(self):
+        self.log("\nCreating eras...")
         self.execute_sql_file('./sql/drug_era.sql', True)
+
+    def _post_filter(self):
+        # explicit filtering with log of how many were deleted or updated
+        self._filter_person()
+        # self._update_visit_reference()
+        # self._update_provider_reference()
+
+    def _filter_person(self):
+        self.log("\nDeleting records with references to non-existent persons...")
+
+        base_query_person_filter = """
+        DELETE
+        FROM cdm5.@cdm_table
+        WHERE person_id NOT IN (
+          SELECT person_id
+          FROM cdm5.person
+        )"""
+
+        for cdm_table in ['observation_period', 'visit_occurrence', 'condition_occurrence', 'procedure_occurrence',
+                          'drug_exposure', 'device_exposure', 'measurement', 'observation', 'death']:
+            query = base_query_person_filter.replace('@cdm_table', cdm_table)
+            self.execute_sql_query(query, True)
+
+    def _update_visit_reference(self):
+        self.log("\nUnset references to non-existent visits...")
+
+        base_query_visit_update = """
+        UPDATE cdm5.@cdm_table
+        SET visit_occurrence_id = NULL
+        WHERE visit_occurrence_id NOT IN (
+          SELECT visit_occurrence_id
+          FROM cdm5.visit_occurrence
+        )"""
+
+        for cdm_table in ['condition_occurrence', 'procedure_occurrence',
+                          'drug_exposure', 'device_exposure', 'measurement', 'observation']:
+            query = base_query_visit_update.replace('@cdm_table', cdm_table)
+            self.execute_sql_query(query, True)
+
+    def _update_provider_reference(self):
+        self.log("\nUnset references to non-existent providers...")
+
+        base_query_provider_update = """
+        UPDATE cdm5.@cdm_table
+        SET provider_id = NULL
+        WHERE provider_id NOT IN (
+          SELECT provider_id
+          FROM cdm5.provider
+        )"""
+
+        for cdm_table in ['condition_occurrence', 'procedure_occurrence',
+                          'drug_exposure', 'device_exposure', 'measurement', 'observation']:
+            query = base_query_provider_update.replace('@cdm_table', cdm_table)
+            self.execute_sql_query(query, True)
 
     def _apply_constraints(self):
         if self.is_constraints_applied:
@@ -265,6 +323,7 @@ class EtlWrapper(object):
         time_delta = time.time() - t1
 
         if verbose:
+            # NOTE: if multiple queries, then rowcount only last number of inserted/updated rows
             message = create_insert_message(query, result.rowcount, time_delta)
             self.log(message)
 
@@ -321,5 +380,5 @@ class EtlWrapper(object):
             total += count
 
         if len(tables) > 1 and log_total:
-            self.log_to_file('+'*(30+1+10))
+            self.log_to_file('+' * (30 + 1 + 10))
             self.log_to_file(format_string.format('TOTAL', total))
