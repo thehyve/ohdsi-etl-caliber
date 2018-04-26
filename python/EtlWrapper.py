@@ -220,6 +220,12 @@ class EtlWrapper(object):
 
     def _post_filter(self):
         # explicit filtering with log of how many were deleted or updated
+        self._filter_person()
+        # self._update_visit_reference()
+        # self._update_provider_reference()
+
+    def _filter_person(self):
+        self.log("\nDeleting records with references to non-existent persons...")
 
         base_query_person_filter = """
         DELETE
@@ -228,11 +234,14 @@ class EtlWrapper(object):
           SELECT person_id
           FROM cdm5.person
         )"""
-        self.log("\nDeleting records with references to non-existent persons...")
+
         for cdm_table in ['observation_period', 'visit_occurrence', 'condition_occurrence', 'procedure_occurrence',
                           'drug_exposure', 'device_exposure', 'measurement', 'observation', 'death']:
             query = base_query_person_filter.replace('@cdm_table', cdm_table)
             self.execute_sql_query(query, True)
+
+    def _update_visit_reference(self):
+        self.log("\nUnset references to non-existent visits...")
 
         base_query_visit_update = """
         UPDATE cdm5.@cdm_table
@@ -241,11 +250,14 @@ class EtlWrapper(object):
           SELECT visit_occurrence_id
           FROM cdm5.visit_occurrence
         )"""
-        self.log("\nUnset references to non-existent visits...")
+
         for cdm_table in ['condition_occurrence', 'procedure_occurrence',
                           'drug_exposure', 'device_exposure', 'measurement', 'observation']:
             query = base_query_visit_update.replace('@cdm_table', cdm_table)
             self.execute_sql_query(query, True)
+
+    def _update_provider_reference(self):
+        self.log("\nUnset references to non-existent providers...")
 
         base_query_provider_update = """
         UPDATE cdm5.@cdm_table
@@ -254,7 +266,7 @@ class EtlWrapper(object):
           SELECT provider_id
           FROM cdm5.provider
         )"""
-        self.log("\nUnset references to non-existent providers...")
+
         for cdm_table in ['condition_occurrence', 'procedure_occurrence',
                           'drug_exposure', 'device_exposure', 'measurement', 'observation']:
             query = base_query_provider_update.replace('@cdm_table', cdm_table)
