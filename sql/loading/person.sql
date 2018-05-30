@@ -79,8 +79,8 @@ INSERT INTO cdm5.person
       ON p.patid = obs_validity.patid
   -- Do not insert patients with an accept value of 0
   WHERE p.accept = 1
-        -- Exclude patients born before 1900 (for both yob formats)
-        AND (p.yob >= 1900 OR yob BETWEEN 100 AND 300)
+        -- Exclude patients born before 1850 or born after 2100 (for both yob formats)
+        AND (p.yob BETWEEN 1850 AND 2100 OR p.yob BETWEEN 50 AND 300)
         -- Exclude patients with observation end dates before observation start date
         AND obs_validity.valid_obs_period IS NOT FALSE
 ;
