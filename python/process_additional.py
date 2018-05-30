@@ -153,11 +153,7 @@ def create_score_value(patid, adid, enttype, data_values, data_names):
 
 
 def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup, unit_code):
-    # Empty data value, skip
-    if not data_value:
-        return
-
-    # data field is a lookup and value translates to 'Data not entered'
+    # Skip if data field is a lookup and value translates to 'Data not entered'
     if data_lookup and data_value == '0':
         return
 
@@ -173,7 +169,9 @@ def create_value(patid, adid, enttype_string, data_value, data_name, data_lookup
         data_numeric = data_value
     elif data_lookup == 'dd/mm/yyyy':
         # support two date formats
-        if '/' in data_value:
+        if not data_value:
+            data_date = None
+        elif '/' in data_value:
             data_date = datetime.strptime(data_value, '%d/%m/%Y')
         else:
             data_date = datetime.strptime(data_value, '%Y%m%d')
