@@ -33,13 +33,14 @@ SELECT
   -- EHR problem list entry
   38000245 observation_type_concept_id,
 
-  hes_diagnoses.provider_id AS provider_id,
+  provider.provider_id AS provider_id,
 
   -- Yes
   4188539 AS value_as_concept_id
 
 FROM public.hes_diagnoses_intermediate AS hes_diagnoses
   LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)
+  LEFT JOIN cdm5.provider ON hes_diagnoses.provider_id = provider.provider_id
 -- All other domains
 WHERE target_domain_id NOT IN ('Condition','Measurement','Procedure')
 ;

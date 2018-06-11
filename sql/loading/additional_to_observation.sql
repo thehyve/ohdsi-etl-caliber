@@ -22,7 +22,7 @@ INSERT INTO cdm5.observation
 
     clinical.eventdate :: TIMESTAMP AS observation_datetime,
 
-    clinical.staffid AS provider_id,
+    provider.provider_id AS provider_id,
 
     createvisitid(additional.patid, clinical.eventdate),
 --     CASE
@@ -69,6 +69,7 @@ INSERT INTO cdm5.observation
 
   FROM public.additional_intermediate AS additional
     JOIN @source_schema.clinical AS clinical USING(adid, patid)
+    LEFT JOIN cdm5.provider ON clinical.staffid = provider_id
     LEFT JOIN cdm5.source_to_target AS enttype_map
         ON enttype_map.source_code = additional.enttype_string AND
            enttype_map.source_vocabulary_id IN ('JNJ_CPRD_ET_LOINC','JNJ_CPRD_SCORE_LOINC')

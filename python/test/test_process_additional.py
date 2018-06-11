@@ -52,15 +52,11 @@ class TestCreateValue(unittest.TestCase):
         result = create_value(9013, 529850, '20-4', '15/01/1996', 'Last claim date', 'dd/mm/yyyy', None)
         self.assertEqual(result, "(9013,529850,'20-4','Last claim date',NULL,NULL,'1996-01-15','dd/mm/yyyy',NULL)")
 
-    def test_skip_empty(self):
-        # Skip if no value
+    def test_empty_value(self):
         result = create_value(1, 2, '1-1', None, 'Diastolic', None, None)
-        self.assertEqual(result, None)
+        self.assertEqual(result, "(1,2,'1-1','Diastolic',NULL,NULL,NULL,NULL,NULL)")
 
-        # Skip empty string as value
-        result = create_value(1, 2, '1-1', '', 'Systolic', None, None)
-        self.assertEqual(result, None)
-
+    def test_skip(self):
         # Skip if lookup and code is 0 ('data not entered')
         result = create_value(1, 371198, '30-1', '0', 'Type of Exercise', 'EXE', None)
         self.assertEqual(result, None)
@@ -69,13 +65,13 @@ class TestCreateValue(unittest.TestCase):
         result = create_value(205006, 2, '120-2', '5', 'Unit of measure', 'SUM', None)
         self.assertEqual(result, None)
 
-    """
-    Input of create_score_value is:
-    patid, adid, enttype, data_values, data_names
-    Output is a sql value string with the following columns:
-    patid, adid, enttype-string, datafield_name, data_value, data_code, data_date, lookup_type, unit_code
-    """
     def test_create_score_value(self):
+        """
+        Input of create_score_value is:
+        patid, adid, enttype, data_values, data_names
+        Output is a sql value string with the following columns:
+        patid, adid, enttype-string, datafield_name, data_value, data_code, data_date, lookup_type, unit_code
+        """
         result = create_score_value(1,
                                     2,
                                     372,
