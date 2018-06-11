@@ -20,7 +20,7 @@ INSERT INTO cdm5.observation
   SELECT
     test_intermediate.patid AS person_id,
 
-    coalesce(test_intermediate.staffid, 0) AS provider_id,
+    provider.provider_id AS provider_id,
 
     createvisitid(test_intermediate.patid, test_intermediate.eventdate),
 --     CASE
@@ -57,5 +57,6 @@ INSERT INTO cdm5.observation
     test_intermediate.unit_source_value AS unit_source_value
 
   FROM public.test_intermediate AS test_intermediate
+    LEFT JOIN cdm5.provider ON test_intermediate.staffid = provider_id
   WHERE target_domain_id = 'Observation'
 ;

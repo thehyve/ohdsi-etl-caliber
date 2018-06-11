@@ -47,8 +47,8 @@ SELECT
 
 	therapy.prodcode AS drug_source_value,
 
-  -- Identifier of the practice staff member entering the data. A value of 0 indicates that the staffid is unknown
-	therapy.staffid AS provider_id,
+  -- Identifier of the practice staff member entering the data.
+	provider.provider_id AS provider_id,
 
   -- 'Prescription written'
 	38000177 AS drug_type_concept_id,
@@ -78,6 +78,7 @@ FROM @source_schema.therapy AS therapy
 		USING (prodcode, ndd, qty, numpacks)
 	LEFT JOIN public.numdays_aggregate_prodcode AS numdays_aggregate_prodcode
 		USING (prodcode)
+	LEFT JOIN cdm5.provider ON therapy.staffid = provider_id
 WHERE
 	therapy.eventdate IS NOT NULL
 	AND therapy.prodcode > 1 -- 0 and 1 are invalid prodcodes

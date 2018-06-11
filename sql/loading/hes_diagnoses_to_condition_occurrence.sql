@@ -34,9 +34,10 @@ SELECT
     ELSE 44786629 -- Secondary condition
   END AS condition_type_concept_id,
 
-  hes_diagnoses.provider_id AS provider_id
+  provider.provider_id AS provider_id
 
 FROM public.hes_diagnoses_intermediate AS hes_diagnoses
   LEFT JOIN cdm5.visit_occurrence USING (visit_occurrence_id)
+  LEFT JOIN cdm5.provider ON hes_diagnoses.provider_id = provider.provider_id
 WHERE target_domain_id = 'Condition'
 ;

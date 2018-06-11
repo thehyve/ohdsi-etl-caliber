@@ -23,7 +23,7 @@ INSERT INTO cdm5.measurement
   SELECT
     test_intermediate.patid AS person_id,
 
-    coalesce(test_intermediate.staffid, 0) AS provider_id,
+    provider.provider_id AS provider_id,
 
     createvisitid(test_intermediate.patid, test_intermediate.eventdate),
 --     CASE
@@ -68,6 +68,7 @@ INSERT INTO cdm5.measurement
     test_intermediate.range_to AS range_high
 
   FROM public.test_intermediate AS test_intermediate
+    LEFT JOIN cdm5.provider ON test_intermediate.staffid = provider_id
   -- All rows not captured in other tables
   WHERE target_domain_id != 'Observation' OR target_domain_id IS NULL
 ;

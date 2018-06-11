@@ -44,7 +44,7 @@ WITH test_with_entity AS (
     data3            AS unit_sum,
     NULL             AS alternative_source_value
   FROM test_with_entity
-  WHERE data_fields > 4 AND data2 IS NOT NULL
+  WHERE data_fields > 4
 
   UNION ALL
 
