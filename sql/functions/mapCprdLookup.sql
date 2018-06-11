@@ -31,11 +31,16 @@ BEGIN
            WHEN 'Rhesus -'           THEN 4013540
            WHEN 'Yes'                THEN 4188539
            WHEN 'No'                 THEN 4188540
+           WHEN 'Ex'                 THEN 4188540
            WHEN 'Low'                THEN 4267416
            WHEN 'High'               THEN 4328749
            WHEN 'Negative'           THEN 9189
            WHEN 'Positive'           THEN 9191
-           ELSE 0 -- 'Not mapped'
+           WHEN 'Inactive'           THEN 9173 -- Inactive
+           WHEN 'Moderate'           THEN 4285732 -- Moderate
+           WHEN 'Vigorous'           THEN 4171868 -- Vigorously
+           WHEN 'Gentle'             THEN 4302792 -- Gently
+         ELSE 0 -- 'Not mapped'
        END;
 END;
 $$ LANGUAGE plpgsql STRICT;
