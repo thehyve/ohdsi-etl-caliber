@@ -1,5 +1,5 @@
-1-1	0	JNJ_CPRD_ET_LOINC	Examination Findings Blood pressure Diastolic  	3012888	LOINC	19800101	20991231
-1-2	0	JNJ_CPRD_ET_LOINC	Examination Findings Blood pressure Systolic   	3004249	LOINC	19800101	20991231
+1-1	0	JNJ_CPRD_ET_LOINC	Examination Findings Blood pressure Diastolic  	3012888	LOINC	19800101	20991231	
+1-2	0	JNJ_CPRD_ET_LOINC	Examination Findings Blood pressure Systolic   	3004249	LOINC	19800101	20991231	
 1-3	0	JNJ_CPRD_ET_LOINC	Examination Findings Blood pressure Korotkoff  	0	LOINC	19800101	20991231	
 1-4	0	JNJ_CPRD_ET_LOINC	Examination Findings Blood pressure Event Time  	0	LOINC	19800101	20991231	
 1-5	0	JNJ_CPRD_ET_LOINC	Examination Findings Blood pressure Laterality Laterality	0	LOINC	19800101	20991231	
