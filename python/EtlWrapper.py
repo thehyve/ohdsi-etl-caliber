@@ -288,9 +288,14 @@ class EtlWrapper(object):
     def execute_process_additional(self):
         t1 = time.time()
         self.log(create_current_file_message('additional_intermediate'), end='')
-        row_count = process_additional(self.connection, source_schema=self.source_schema, target_schema='public')
-        self.total_rows_inserted += row_count
-        self.log(create_message('public.additional_intermediate', row_count, time.time() - t1))
+
+        try:
+            row_count = process_additional(self.connection, source_schema=self.source_schema, target_schema='public')
+            self.total_rows_inserted += row_count
+            self.log(create_message('public.additional_intermediate', row_count, time.time() - t1))
+        except Exception as e:
+            self.log("###")  # newline before error
+            self.log("Processing additional table failed:\n%s" % e)
 
     def execute_sql_file(self, filename, verbose=False):
         # Open and read the file as a single buffer
