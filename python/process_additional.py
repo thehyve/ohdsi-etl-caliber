@@ -37,7 +37,7 @@ def sql_numeric_param(i):
     if i is None:
         return "NULL"
     try:
-        int(i)
+        float(i)
     except ValueError as error:
         print(error, end='. ')
         print("The value is set to NULL")
