@@ -8,6 +8,7 @@ INSERT INTO cdm5.observation
   visit_occurrence_id,
   observation_type_concept_id,
   observation_concept_id,
+  observation_source_concept_id,
   observation_source_value,
   value_as_number,
   value_as_concept_id,
@@ -40,6 +41,8 @@ INSERT INTO cdm5.observation
     END AS observation_type_concept_id,
 
     coalesce(enttype_map.target_concept_id, 0) AS observation_concept_id,
+
+    enttype_map.source_concept_id AS observation_source_concept_id,
 
     additional.enttype_string AS observation_source_value,
 

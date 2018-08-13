@@ -9,6 +9,7 @@ INSERT INTO cdm5.drug_exposure
 	drug_exposure_end_date,
 	days_supply,
 	drug_concept_id,
+	drug_source_concept_id,
 	drug_source_value,
 	provider_id,
 	drug_type_concept_id,
@@ -43,7 +44,9 @@ SELECT
 	END AS days_supply,
 
   -- Mapped standard concept id or 0 if no mapping found
-	COALESCE(target_concept_id,0) AS drug_concept_id,
+	COALESCE(product_map.target_concept_id,0) AS drug_concept_id,
+
+	product_map.source_concept_id AS drug_source_concept_id,
 
 	therapy.prodcode AS drug_source_value,
 

@@ -7,6 +7,7 @@ INSERT INTO cdm5.device_exposure
 	device_exposure_start_date,
   device_exposure_start_datetime,
 	device_concept_id,
+	device_source_concept_id,
   device_source_value,
   device_type_concept_id,
   provider_id,
@@ -20,6 +21,8 @@ SELECT
 	therapy.eventdate :: TIMESTAMP AS device_exposure_start_datetime,
 
 	product_map.target_concept_id AS device_concept_id,
+
+	product_map.source_concept_id AS device_source_concept_id,
 
   therapy.prodcode AS device_source_value,
 

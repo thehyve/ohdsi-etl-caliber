@@ -88,6 +88,7 @@ SELECT
   test_intermediate.staffid                  AS staffid,
   test_intermediate.enttype_string           AS enttype_string,
   enttype_map.target_concept_id              AS _concept_id,
+  enttype_map.source_concept_id              AS _source_concept_id,
   test_intermediate.value                    AS value,
   test_intermediate.range_from               AS range_from,
   test_intermediate.range_to                 AS range_to,

@@ -36,6 +36,12 @@ def sql_date_param(d):
 def sql_numeric_param(i):
     if i is None:
         return "NULL"
+    try:
+        float(i)
+    except ValueError as error:
+        print(error, end='. ')
+        print("The value is set to NULL")
+        return "NULL"
     return str(i)
 
 
@@ -83,7 +89,7 @@ def process_row(row):
     patid = row[0]
     enttype = row[1]
     adid = row[2]
-    n_data_columns = row[3]
+    n_data_columns = int(row[3])
 
     data_values = row[4:4+MAX_DATA_COLUMNS]
     data_names = row[4+MAX_DATA_COLUMNS:4+MAX_DATA_COLUMNS*2]
