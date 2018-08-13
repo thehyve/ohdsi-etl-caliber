@@ -8,6 +8,7 @@ INSERT INTO cdm5.measurement
   visit_occurrence_id,
   measurement_type_concept_id,
   measurement_concept_id,
+  measurement_source_concept_id,
   measurement_source_value,
   value_as_number,
   value_as_concept_id,
@@ -40,6 +41,8 @@ INSERT INTO cdm5.measurement
     END AS measurement_type_concept_id,
 
     coalesce(enttype_map.target_concept_id, 0) AS measurement_concept_id,
+
+    enttype_map.source_concept_id AS measurement_source_concept_id,
 
     additional.enttype_string AS measurement_source_value,
 

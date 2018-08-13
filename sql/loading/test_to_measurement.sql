@@ -10,6 +10,7 @@ INSERT INTO cdm5.measurement
   measurement_datetime,
   measurement_type_concept_id,
   measurement_concept_id,
+  measurement_source_concept_id,
   measurement_source_value,
   operator_concept_id,
   value_as_number,
@@ -40,6 +41,8 @@ INSERT INTO cdm5.measurement
     44818702 AS measurement_type_concept_id,
 
     coalesce(test_intermediate._concept_id,0) AS measurement_concept_id,
+
+    test_intermediate._source_concept_id AS measurement_source_concept_id,
 
     test_intermediate.enttype_string AS measurement_source_value,
 

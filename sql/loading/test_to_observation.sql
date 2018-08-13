@@ -10,6 +10,7 @@ INSERT INTO cdm5.observation
   observation_datetime,
   observation_type_concept_id,
   observation_concept_id,
+  observation_source_concept_id,
   observation_source_value,
   value_as_number,
   qualifier_concept_id,
@@ -37,6 +38,8 @@ INSERT INTO cdm5.observation
     38000278 AS observation_type_concept_id,
 
     coalesce(test_intermediate._concept_id, 0) AS observation_concept_id,
+
+    test_intermediate._source_concept_id AS observation_source_concept_id,
 
     test_intermediate.enttype_string AS observation_source_value,
 
