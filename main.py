@@ -19,7 +19,7 @@ from python.EtlWrapper import EtlWrapper
 from sqlalchemy import create_engine
 import click
 
-__version__ = '0.1.7'
+__version__ = '0.1.8-SNAPSHOT'
 
 
 @click.command()
