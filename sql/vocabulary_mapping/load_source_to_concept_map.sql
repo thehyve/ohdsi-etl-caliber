@@ -36,6 +36,9 @@ COPY cdm5.source_to_concept_map FROM '@absPath/resources/mapping_tables/JNJ_CPRD
 -- Product codes to RxNorm
 COPY cdm5.source_to_concept_map FROM '@absPath/resources/mapping_tables/CPRD_PRODUCT_TO_RXNORM.csv' WITH CSV HEADER;
 
+-- Medical codes to RxNorm
+COPY cdm5.source_to_concept_map FROM '@absPath/resources/mapping_tables/CPRD_MEDICAL.csv' WITH CSV HEADER;
+
 -- CPRD qualifiers (TQU)
 COPY cdm5.source_to_concept_map FROM '@absPath/resources/mapping_tables/CPRD_QUALIFIER_TO_MEAS_VALUE.csv' WITH CSV HEADER;
 

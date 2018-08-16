@@ -33,12 +33,12 @@ CREATE TABLE cdm5.source_to_target AS
     JOIN cdm5.concept AS target
       ON concept_id_2 = target.concept_id
   WHERE source.vocabulary_id IN (
-         'Read'
-        ,'ICD10'
+         'ICD10'
         ,'ICD9CM'
         ,'OPCS4'
         ,'HES Specialty'
         ,'CPRD_PRODUCT'
+        ,'CPRD_MEDICAL'
         ,'CPRD_QUALIFIER'
         ,'CPRD_UNIT'
         ,'JNJ_CPRD_ET_LOINC'

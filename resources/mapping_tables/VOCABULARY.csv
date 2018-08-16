@@ -8,3 +8,4 @@ JNJ_CPRD_HES_LOINC,CPRD HES Observation Fields to LOINC,,,0
 CPRD_PRODUCT,CPRD Product as given in the therapy table,,,0
 CPRD_QUALIFIER,CPRD Test Qualifier (TQU) lookup,,,0
 CPRD_UNIT,CPRD Specimen Unit of Measure (SUM) lookup,,,0
+CPRD_MEDICAL,CPRD Medical codes as given in the medical table,,,0
