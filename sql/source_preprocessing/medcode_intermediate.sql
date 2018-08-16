@@ -60,7 +60,7 @@ INTO public.medcode_intermediate
 
 FROM medcode_union
   LEFT JOIN cdm5.source_to_target AS medcode_map
-    ON medcode_union.medcode = medcode_map.source_code
+    ON medcode_union.medcode :: TEXT = medcode_map.source_code
     AND medcode_map.source_vocabulary_id = 'CPRD_MEDICAL'
 -- Only include rows with date, and valid medcode
 WHERE medcode_union.eventdate IS NOT NULL AND medcode_union.medcode > 0

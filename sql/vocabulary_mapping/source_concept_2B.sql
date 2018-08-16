@@ -19,7 +19,7 @@ INSERT INTO cdm5.concept (
       ) + 2000000000                         AS concept_id,
     source_code                              AS concept_code,
     source_vocabulary_id                     AS vocabulary_id,
-    STRING_AGG(source_code_description, ';') AS concept_name,
+    MIN(source_code_description)             AS concept_name,
     MIN(valid_start_date)                    AS valid_start_date,
     MAX(valid_end_date)                      AS valid_end_date,
     'Metadata'                               AS domain_id, -- TODO
