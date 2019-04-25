@@ -106,9 +106,10 @@ class EtlWrapper(object):
 
         self.log_summary()
         self.log_run_time()
-
+        
+        # TODO: filter upon insert (join on person/visit table)
         # Sanitize tables
-        self._post_filter()
+        # self._post_filter()
 
         # Derived era tables
         self._derive_era()
