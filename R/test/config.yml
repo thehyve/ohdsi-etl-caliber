@@ -1,0 +1,7 @@
+connectionDetails:
+  user: postgres
+  password: heartdatabig
+  server: localhost/caliber_dev
+  port: 6000
+sourceSchema: caliberTest
+cdmSchema: cdm5

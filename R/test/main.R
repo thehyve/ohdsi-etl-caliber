@@ -1,3 +1,8 @@
+library("yaml")
+source('TestingFramework.R')
+
+config <- yaml.load_file("config.yml")
+
 source('TestingFramework.R')
 
 # get_defaults_patient()
@@ -68,24 +73,28 @@ expect_no_observation(person_id = 2001, observation_source_value = '30-1')
 ###
 
 library(DatabaseConnector)
-connectionDetails <- createConnectionDetails(dbms = "postgresql",
-                                             user = "postgres",
-                                             password = "heartdatabig",
-                                             server = "localhost/caliber_dev",
-                                             port = 6000)
+connectionConfig <- config$connectionDetails
+connectionDetails <- createConnectionDetails(dbms = 'postgresql',
+                                             user = connectionConfig$user,
+                                             password = connectionConfig$password,
+                                             server = connectionConfig$server,
+                                             port = connectionConfig$port)
 connection <- connect(connectionDetails)
 
+###
+# Run WhiteRabbit to create (empty) source tables
+###
 insert_sql <- generateInsertSql()
-executeSql(connection, paste(c("SET search_path TO caliberTest;", insert_sql), collapse = "\n"))
+executeSql(connection, sprintf("SET search_path TO %s;", config$sourceSchema))
+executeSql(connection, paste(insert_sql, collapse = "\n"))
 
-### 
-# Test
+###
 # Run ETL on source caliberTest (to cdm5)
-# python main.py -w heartdatabig -s caliberTest --skipvocab
 ###
 
 test_sql <- testSql
-test_sql[1] <- "DROP TABLE IF EXISTS cdm5.test_results;"
-executeSql(connection, paste(c("SET search_path TO cdm5;", test_sql), collapse = ";\n"))
-querySql(connection, "SELECT * FROM cdm5.test_results")
-# querySql(connection, "SELECT * FROM cdm5.observation_period")
+executeSql(connection, sprintf("SET search_path TO %s;", config$cdmSchema))
+test_sql[1] <- "DROP TABLE IF EXISTS test_results;" # Replace existing SQL server specific table drop
+executeSql(connection, paste(test_sql, collapse = ";\n"))
+
+querySql(connection, "SELECT * FROM test_results")
